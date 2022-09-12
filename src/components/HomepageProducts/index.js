@@ -39,7 +39,7 @@ const FeatureList = [
         Documentação e recursos de nossa API REST.
       </>
     ),
-    path:"/sign/intro"
+    path:"docs/sign/intro"
 
   },
 ];
