@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkunico_docs=self.webpackChunkunico_docs||[]).push([[1953],{28247:o=>{o.exports=JSON.parse('{"label":"facebook","permalink":"/unico-docs-stage/en/blog/tags/facebook","allTagsPath":"/unico-docs-stage/en/blog/tags","count":1}')}}]);
