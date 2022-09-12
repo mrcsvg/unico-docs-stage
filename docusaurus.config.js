@@ -16,8 +16,8 @@ const config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'unico', // Usually your GitHub org/user name.
-  projectName: 'docusaurus', // Usually your repo name.
+  organizationName: 'mrcsvg', // Usually your GitHub org/user name.
+  projectName: 'unico-docs-stage', // Usually your repo name.
 
   plugins: [    
     [require.resolve('@cmfcmf/docusaurus-search-local'), {
