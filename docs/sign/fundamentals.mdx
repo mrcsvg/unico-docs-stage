@@ -1,0 +1,59 @@
+---
+sidebar_position: 3
+sidebar_label: Conceitos básicos
+title: Conceitos básicos
+---
+
+## Sobre este guia
+
+Nossas API utiliza uma série de conceitos e objetos como base para nossas funcionalidades. Este guia tem o objetivo de te familiarizar com cada um desses conceitos para que você tenha um proceso de integração totalmente flúido.
+
+Ao explorar com os conceitos deste guia, você será capaz de entender todo o fluxo de vida de um documento dentro do **Unico Sign**.
+
+## Conceitos básicos
+
+Entenda abaixo alguns conceitos básicos e termos importantes para sua integração.
+
+### Envelope
+
+O envelope é uma representação de um envelope com documentos na vida real. Ele é o objeto que agrupa todos os documentos(Documents) e seus assinantes(Subscribers). Um envelope deve conter pelo menos um documento, sendo aceito no máximo 10 documentos por envelope.
+
+### Document
+
+O document é a representação de um documento e pode ter duas formas. O documento pode ser um arquivo pdf na forma de Base64 ou pode ser um modelo(Template) pré pronto. Um documento pode conter um ou mais assinantes(Subscribers).
+
+### Subscriber
+
+Subscriber é o assinante de um documento(Document). Todo assinante tem um tipo(SubscriberRole), sendo que existem três possíveis, são eles: Assinatura própria, Representante Legal ou Testemunha. Em cada envelope, o assinante pode ter apenas um dos três tipos. Segue abaixo a descrição de cada tipo.
+
+- Assinatura própria: é a assinatura do contratado.
+- Representante Legal: é a assinatura de uma pessoa que representa terceiros, sejam empresas ou outras pessoas.
+- Testemunha: é a assinatura da testemunha do documento.
+
+### Template
+
+Template é um modelo de documento, normalmente utilizado em casos de envio de arquivo recorrente, uma vez que pode ser reutilizado em vários envelopes. Um exemplo de uso é o envio de holerites ou folha de ponto. Além disso, modelos podem conter formulários, para que o assinante possa preencher ou ser preenchido pelo emissor com uma informação como, por exemplo, data da emissão ou assinatura, idade, nome dos pais, nome completo, opções sexuais, e qualquer coisa que precise ser preenchido em tempo de emissão ou assinatura.
+
+Para criar um modelo é necessário acessar o Dashboard do Unico Sign, criar o modelo a partir de um arquivo pdf válido e configurar o seu formulário visualmente, caso seja necessário. A partir desse ponto, os modelos poderão serem utilizados na emissão via API.
+
+### Emitter
+
+Emitter se trata do emissor do documento, ou seja o usuário que está realizando a criação do envelope. Caso o emissor precise também ser assinante do envelope, ele pode ser adicionado como assinante e terá o tipo de representante legal.
+
+### Evidências ou conjunto probatório
+
+Conjunto formado pelas principais informações do envelope. Serve para comprovar juridicamente a conformidade e validade de um envelope, documento ou assinatura.
+
+## Próximos passos
+
+- Conheça as funcionalidades disponíveis para o [Gerenciamento de documentos](/docs/category/gerenciando-documentos).
+- Conheça as funcionalidades disponíveis para o [Gerenciamento de envelopes](/docs/category/gerenciando-envelopes).
+- Tendo problemas em nossa integração? Acesse nossa sessão de [FAQ e problemas comuns](/FAQ).
+- Explore a documentacão da API do Unico Sign em nosso [API Reference](#).
+
+## Ficou com dúvidas?
+
+Esperamos ter ajudado com este artigo. Não encontrou algo ou ainda precisa de ajuda? 
+
+- Caso tenha dúvidas que não estejam relacionadas as nossas APIs, acesse nossa [central de ajuda](https://ajuda.unico.io/hc/pt-br/categories/360003086372-Unico-Sign).
+- Caso já seja um parceiro, entre em contato através de nosso [portal de solicitações](https://ajuda.unico.io/hc/pt-br/requests/new).

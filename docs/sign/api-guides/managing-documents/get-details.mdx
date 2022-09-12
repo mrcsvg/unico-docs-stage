@@ -1,0 +1,178 @@
+---
+sidebar_position: 1
+sidebar_label: Obter detalhes
+title: Obter detalhes
+---
+
+## Sobre este guia
+
+Através deste guia, demonstraremos como obter todos os detalhes de um documento através de nossa API REST. Ao seguir os passos deste guia, em poucos minutos você será capaz de obter todos os detalhes de um documento de forma estruturada em uma resposta JSON.
+
+## O que você vai precisar
+
+Antes de iniciar sua integração:
+
+1. Certifique-se que você possui credenciais válidas para utilizar o **Unico Sign**. Se você ainda não possui suas credenciais, siga nosso [guia de Primeiros Passos](#) para configurar sua conta de teste e obter suas chaves de API.
+2. Entenda os conceitos básicos sobre nosso produto. É extremamente importante que você entenda estes conceitos para fazer uma boa utilização das APIs do **Unico Sign**. Você pode encontrar nossos conceitos básicos [neste guia](#).
+
+## Funcionamento básico
+
+Como explicamos em nosso [guia de conceitos básicos](#), **Documentos** (`document`) são a representação virtual de um documento que deve ser assinado (por um ou mais assinanates) e pode ser gerado a patir de um arquivo PDF ou de um modelo (`Template`). 
+
+Todos os eventos que ocorrem no ciclo vida de um documento ficam registrados e podem ser recuperados através desta funcionalidade. Este endpoint disponibilza os detalhes de cada documento, assim como todos seus eventos.
+
+Atualmente, os seguintes eventos são armazenados e retornados:
+- Envio do documento para assinatura;
+- Abertura do link do envelope por um assinante;
+- Visualização do documento por um assinante;
+- Assinatura ou recusa do documento por um assinante;
+
+Entenda, a seguir, como chamar nossa API Rest para obter detalhes de seus documentos:
+
+import Steps from '@site/src/components/Steps';
+
+<Steps headingDepth={3}>
+<ol>
+
+<li>
+
+### Obtenha um token OAuth válido;
+
+Para efetuar requisições à nossa API REST você necessitará de um token de acesso OAuth válido. Caso não esteja familizarizado com o modelo de autenticação OAuth, entenda como gerar um token válido [neste artigo](#). Após sua geração, o token de acesso deverá ser enviado no `header` de sua requisição, junto ao parâmetro `Authorization`.
+
+:::info Ambientes
+
+Ao iniciar sua integração você receberá credenciais a nosso ambiente de homologação. Sómente após o processo de testes e certificação você receberá credenciais de produção.
+
+Você deverá apontar suas requisições às URLs corretas em cada estágio de sua integração. Abaixo listamos as URLs de homologação e produção:
+
+- Ambiente de homologação: `https://signhom.acesso.io`;
+- Ambiente de produção: `https://sign.acesso.io`.
+
+:::
+
+</li>
+
+
+<li>
+
+### Faça uma requisição GET para o endpoint `/documents/`
+
+import HttpMethod from '@site/src/components/HttpMethod';
+
+Após gerar um token de acesso válido, faça uma requisição para o endpoint de obtenção de detalhes de documentos da nossa API REST (<HttpMethod method="GET">/service/documents</HttpMethod>), especificando qual documento deseja como um parâmetro no path da requisição.
+
+Abaixo um exemplo da requisição:
+
+:::note Document UUID
+
+Não se esqueça de subsctituir o parâmetro `DOCUMENT_UUID` na requisição abaixo. Este parâmetro deve conter o UUID do documento ao qual você deseje gerar as evidências.
+
+Exemplo de formato de um UUID: 00000000-0000-0000-0000-000000000000
+
+:::
+
+```bash
+curl -X 'GET' \
+  'https://sign-core-dev.acesso.io/api/v1/service/documents/{{DOCUMENT_UUID}}' \
+  -H 'accept: application/pdf' \
+  -H 'Authorization: Bearer {{ACCESS_TOKEN}}'
+
+```
+
+Se tudo der certo em sua requisição, você receberá como respota um JSON contendo uma lista com os campos do template:
+
+```json
+{
+  "Url": "https://",
+  "UrlVoucher": "https://",
+  "DocumentType": "Nome",
+  "CreatedDate": "09/04/2022 20:09",
+  "EmitterUserName": "Name",
+  "EmitterUserEmail": "email@gmail.com",
+  "CompanySocialName": "Unico",
+  "UUID": "4a95e405-2534-4cf6-aa56-01ddc535bbf4",
+  "HasFile": false,
+  "Subscribers": [
+    {
+      "SubscriberName": "Flavia dos Santos",
+      "SubscriberCPF": "10000000019",
+      "SubscriberEmail": "email@gmail.com",
+      "SubscriberPhone": "5513987654321",
+      "ID_SubscriberStatus": 108,
+      "SubscriberOrder": 1,
+      "SubscriberEvents": [
+        {
+          "EventName": "NotifiedEmail",
+          "EventDescription": "O envelope foi enviado via E-mail",
+          "EventDates": [
+            "2022-09-03T20:20:01.6046578+00:00"
+          ]
+        },
+        {
+          "EventName": "EnvelopeOpened",
+          "EventDescription": "O link do envelope foi aberto",
+          "EventDates": [
+            "2022-09-04T15:20:01.6046598+00:00",
+            "2022-09-04T16:20:01.6046602+00:00"
+          ]
+        },
+        {
+          "EventName": "DocumentViewed",
+          "EventDescription": "O documento foi visualizado",
+          "EventDates": [
+            "2022-09-04T17:20:01.6046608+00:00",
+            "2022-09-04T18:20:01.6046614+00:00",
+            "2022-09-04T19:20:01.6046616+00:00"
+          ]
+        },
+        {
+          "EventName": "DocumentAccepted",
+          "EventDescription": "O documento foi aceito",
+          "EventDates": [
+            "2022-09-04T20:10:01.6046619+00:00"
+          ]
+        },
+        {
+          "EventName": "DocumentFinalized",
+          "EventDescription": "O processo de assinatura do signatário foi finalizado",
+          "EventDates": [
+            "2022-09-04T20:15:01.6046622+00:00"
+          ]
+        }
+      ]
+    }
+  ],
+  "IsTemplate": false,
+  "DocumentSubcategoryUUID": "af70e1a4-1f8e-432c-b4c1-40b29dfd1aea",
+  "DocumentSubcategoryName": "Abertura de conta bancária",
+  "DocumentCategoryUUID": "e3529e7f-63cd-4574-a03e-d248f078d8fd",
+  "DocumentCategoryName": "Admissão"
+}
+```
+
+Cada elemento do objeto `SubscriberEvents` representa um evento ocorrido no documento, sendo que:  
+
+- O parâmetro `EventName` representa o nome do evento;
+- O parâmetro `EventDescription` representa a descrição do evento;
+- O parâmetro `EventDates` contem uma lista de datas nas quais o evento ocorreu;
+
+</li>
+
+</ol>
+
+</Steps>
+
+## Próximos passos
+
+- Conheça outras funcionalidades disponíveis para o [Gerenciamento de documentos](/docs/category/gerenciando-documentos).
+- Conheça outras funcionalidades disponíveis para o [Gerenciamento de envelopes](/docs/category/gerenciando-envelopes).
+- Tendo problemas em nossa integração? Acesse nossa sessão de [FAQ e problemas comuns](/FAQ).
+- Explore a documentacão da API do Unico Sign em nosso [API Reference](#).
+
+## Ficou com dúvidas?
+
+Esperamos ter ajudado com este artigo. Não encontrou algo ou ainda precisa de ajuda? 
+
+- Caso tenha dúvidas que não estejam relacionadas as nossas APIs, acesse nossa [central de ajuda](https://ajuda.unico.io/hc/pt-br/categories/360003086372-Unico-Sign).
+- Caso já seja um parceiro, entre em contato através de nosso [portal de solicitações](https://ajuda.unico.io/hc/pt-br/requests/new).

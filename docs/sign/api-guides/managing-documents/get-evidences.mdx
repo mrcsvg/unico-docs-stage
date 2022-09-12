@@ -1,0 +1,137 @@
+---
+sidebar_position: 4
+sidebar_label: Obter evidências
+title: Obter evidências
+---
+
+## Sobre este guia
+
+Através deste guia, demonstraremos como recuperar um conjunto de evidências de um documento assinado através de nossas APIs REST. Ao seguir os passos deste guia, em poucos minutos você será capaz de obter um arquivo PDF com o conjunto de evidências.
+
+:::info Envelopes, documentos e evidências 
+
+Você já sabe, mas não custa lembrar: Um envelope possui um ou mais documentos. As evidências relacionam-se diretament aos documentos e não aos envelopes.
+:::
+
+## O que você vai precisar
+
+Antes de iniciar sua integração:
+
+1. Certifique-se que você possui credenciais válidas para utilizaro **Unico Sign**. Se você ainda não suas credenciais, siga nosso [guia de Primeiros Passos](#) para configurar sua conta de teste e obter sua chaves de API.
+2. Entenda os conceitos básicos sobre nosso produto. É extremamente importante que você entenda estes conceitos para fazer uma boa utilização das APIs do **Unico Sign**. Você pode encontrar nossos conceitos básicos [neste guia](#).
+
+## Funcionamento básico
+
+Como explicamos em nosso [guia de conceitos básicos](#), **Evidências** servem para comprovar juridicamente a conformidade e validade de um envelope, documento ou assinatura.
+
+Os elementos básicos de um conjunto de **Evidências** são:
+
+1. Dados do emissor do envelope;
+2. Dados do envelope (Id e Status);
+3. Dados do documento original (Nome, Id e Hash *SHA256* do documento);
+4. Dados dos assinantes;
+5. Dados do documento assinado (Nome, Id e Hash *SHA256* da assinatura);
+6. Logs dos eventos ocorridos no envelope.
+
+Entenda a seguir, como obter um arquivo PDF com o conjunto de evidências de um documento já assinado:
+
+
+import Steps from '@site/src/components/Steps';
+
+<Steps headingDepth={3}>
+<ol>
+
+
+<li>
+
+### Obtenha um token OAuth válido;
+
+Para efetuar requisições à nossa API REST você necessitará de um token de acesso OAuth válido. Caso não esteja familizarizado com o modelo de autenticação OAuth, entenda como gerar um token válido [neste artigo](#). Após sua geração, o token de acesso deverá ser enviado no `header` de sua requisição, junto ao parâmetro `Authorization`.
+
+:::info Ambientes
+
+Ao iniciar sua integração você receberá credenciais a nosso ambiente de homologação. Sómente após o processo de testes e certificação você receberá credenciais de produção.
+
+Você deverá apontar suas requisições às URLs corretas em cada estágio de sua integração. Abaixo listamos as URLs de homologação e produção:
+
+- Ambiente de homologação: `https://signhom.acesso.io`;
+- Ambiente de produção: `https://sign.acesso.io`.
+
+:::
+
+</li>
+
+
+<li>
+
+### Certifique-se que o documento tem um status válido
+
+O documento de evidências está disponível apenas para os 3 status finais do fluxo de assinaturas: Concluído, recusado ou cancelado. Caso o documento não esteja em um desses formatos, você não conseguirá gerar o arquivo PDF.
+
+:::note Consulta do status
+
+Atualmente não disponibilizamos nenhum endpoint para consultar o status do documento. Caso o documento não esteja em um status considerado "final", retornaremos um erro HTTP 500.
+
+:::
+
+</li>
+
+<li>
+
+### Faça uma requisição para o endpoint `/evidence/`
+
+import HttpMethod from '@site/src/components/HttpMethod';
+
+Após gerar um token de acesso válido, faça uma requisição para o endpoint de geração de evidencias de nossa API REST (<HttpMethod method="GET">/service/evidence</HttpMethod>), especificando o documento ao qual deseja gerar as evidências como um parâmetro no path.
+
+Abaixo um exemplo da requisição:
+
+:::note Document UUID
+
+Não se esqueça de subsctituir o parâmetro `DOCUMENT_UUID` na requisição abaixo. Este parâmetro deve conter o UUID do documento ao qual você deseje gerar as evidências.
+
+Exemplo de formato de um UUID: 00000000-0000-0000-0000-000000000000
+
+:::
+
+```bash
+curl -X 'GET' \
+  'https://sign-core-dev.acesso.io/api/v1/service/evidence/{{DOCUMENT_UUID}}' \
+  -H 'accept: application/pdf' \
+  -H 'Authorization: Bearer 123'
+
+```
+
+Se tudo der certo em sua requisição, você receberá como respota um string codificação em base64 que deverá ser convertido para um arquivo PDF em sua aplicação. Exemplo de resposta: 
+
+```text
+ assdad
+xxxxx
+
+```
+
+
+
+</li>
+
+
+</ol>
+
+</Steps>
+
+
+## Próximos passos
+
+- Conheça outras funcionalidades disponíveis para o [Gerenciamento de documentos](/docs/category/gerenciando-documentos).
+- Conheça outras funcionalidades disponíveis para o [Gerenciamento de envelopes](/docs/category/gerenciando-envelopes).
+- Tendo problemas em nossa integração? Acesse nossa sessão de [FAQ e problemas comuns](/FAQ).
+- Explore a documentacão da API do Unico Sign em nosso [API Reference](#).
+
+## Ficou com dúvidas?
+
+Esperamos ter ajudado com este artigo. Não encontrou algo ou ainda precisa de ajuda? 
+
+- Caso tenha dúvidas que não estejam relacionadas as nossas APIs, acesse nossa [central de ajuda](https://ajuda.unico.io/hc/pt-br/categories/360003086372-Unico-Sign).
+- Caso já seja um parceiro, entre em contato através de nosso [portal de solicitações](https://ajuda.unico.io/hc/pt-br/requests/new).
+
+

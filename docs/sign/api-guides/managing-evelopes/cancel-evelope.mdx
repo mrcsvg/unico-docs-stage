@@ -1,0 +1,115 @@
+---
+sidebar_position: 1
+sidebar_label: Cancelar envelopes
+description: Aprenda como cancelar um envelope
+title: Cancelar envelopes
+---
+
+## Sobre este guia
+
+Através deste guia, demonstraremos como cancelar um envelope através de nossa API REST. Ao seguir os passos deste guia, em poucos minutos você será capaz de cancelar um envelope a partir de seu UUID e receber uma confirmação em uma resposta JSON.
+
+## O que você vai precisar
+
+Antes de iniciar sua integração:
+
+1. Certifique-se que você possui credenciais válidas para utilizar o **Unico Sign**. Se você ainda não possui suas credenciais, siga nosso [guia de Primeiros Passos](#) para configurar sua conta de teste e obter suas chaves de API.
+2. Entenda os conceitos básicos sobre nosso produto. É extremamente importante que você entenda estes conceitos para fazer uma boa utilização das APIs do **Unico Sign**. Você pode encontrar nossos conceitos básicos [neste guia](#).
+
+## Funcionamento básico
+
+Como explicamos em nosso [guia de conceitos básicos](#), nossa entidade **Envelope** (`envelope`) é a representação virtual de um envelope com documentos na vida real. Ele é o objeto que agrupa todos os documentos (`document`) e seus assinantes (`subscriber`), sendo que um envelope pode conter mais de documento, que por sua vez pode conter um ou mais assinantes.
+
+Ao cancelar um envelope, um e-mail e um SMS serão enviados para os assinantes dos documentos contidos no envelope. Uma vez cancelado, o envelope não poderá mais ser acessado, assinado ou recusado pelos assinantes.
+
+Entenda, a seguir, como chamar nossa API REST para cancelar um envelope.
+
+import Steps from '@site/src/components/Steps';
+
+<Steps headingDepth={3}>
+<ol>
+
+<li>
+
+### Obtenha um token OAuth válido;
+
+Para efetuar requisições à nossa API REST você necessitará de um token de acesso OAuth válido. Caso não esteja familizarizado com o modelo de autenticação OAuth, entenda como gerar um token válido [neste artigo](#). Após sua geração, o token de acesso deverá ser enviado no `header` de sua requisição, junto ao parâmetro `Authorization`.
+
+:::info Ambientes
+
+Ao iniciar sua integração você receberá credenciais a nosso ambiente de homologação. Sómente após o processo de testes e certificação você receberá credenciais de produção.
+
+Você deverá apontar suas requisições às URLs corretas em cada estágio de sua integração. Abaixo listamos as URLs de homologação e produção:
+
+- Ambiente de homologação: `https://signhom.acesso.io`;
+- Ambiente de produção: `https://sign.acesso.io`.
+
+:::
+
+</li>
+
+<li>
+
+### Faça uma requisição POST para o endpoint `/cancel/`
+
+import HttpMethod from '@site/src/components/HttpMethod';
+
+Após gerar um token de acesso válido, faça uma requisição para o endpoint de cancelamento de envelopes da nossa API REST (<HttpMethod method="POST">/service/cancel</HttpMethod>) enviando os parâmetros conforme o schema abaixo:
+
+import ApiSchema from '@theme/ApiSchema';
+
+<ApiSchema pointer="#/components/schemas/CancelEnvelopeRequest" />
+
+:::caution Permissão para Visualizar Documentos
+
+Para utilizar esta rota é necessário que o usuário tenha permissão de **Enviar Documentos**
+
+:::
+
+Abaixo um exemplo de como cancelar um envelope com o UUID igual a **00000000-0000-0000-0000-000000000000** informando como motivo "**Solicitação de correção**":
+
+```bash
+
+curl -X 'POST' \
+  'https://sign-core-uat.acesso.io/api/v1/service/cancel' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer {{ACCESS_TOKEN}}'
+  -d '{
+  "EnvelopeUUID": "00000000-0000-0000-0000-000000000000",
+  "Reason": "Solicitação de correção"
+}'
+```
+
+Se tudo der certo em sua requisição, você receberá como resposta um JSON contendo a confirmação da exclusão do envelope.
+
+```json
+{
+  "Success": true,
+  "Message": "Envelope cancelado com sucesso"
+}
+```
+
+:::info API Reference
+
+Aprenda mais sobre este endpoint em nosso [API Reference](#).
+
+:::
+
+</li>
+</ol>
+</Steps>
+
+## Próximos passos
+
+- Conheça outras funcionalidades disponíveis para o [Gerenciamento de documentos](/docs/category/gerenciando-documentos).
+- Conheça outras funcionalidades disponíveis para o [Gerenciamento de envelopes](/docs/category/gerenciando-envelopes).
+- Tendo problemas em nossa integração? Acesse nossa sessão de [FAQ e problemas comuns](/FAQ).
+- Explore a documentacão da API do Unico Sign em nosso [API Reference](#).
+
+## Ficou com dúvidas?
+
+Esperamos ter ajudado com este artigo. Não encontrou algo ou ainda precisa de ajuda? 
+
+- Caso tenha dúvidas que não estejam relacionadas as nossas APIs, acesse nossa [central de ajuda](https://ajuda.unico.io/hc/pt-br/categories/360003086372-Unico-Sign).
+- Caso já seja um parceiro, entre em contato através de nosso [portal de solicitações](https://ajuda.unico.io/hc/pt-br/requests/new).

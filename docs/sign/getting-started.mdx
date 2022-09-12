@@ -1,0 +1,140 @@
+---
+sidebar_position: 2
+sidebar_label: Primeiros passos
+title: Primeiros passos
+---
+
+Entenda como configurar sua conta na Unico e deixar tudo pronto para efetuar suas primeiras requisições com a API REST do Unico Sign. Após estes passos, você estará pronto para iniciar sua integração com nossa API.
+
+## Crie sua conta com a Unico
+
+<!-- #TODO Confirmar -->
+
+O **Unico Sign** ainda não está disponível para todos nossos clientes. Caso tenha interesse, entre em contato conosco através de nossos [canais de atendimento](https://ajuda.unico.io/hc/pt-br/articles/360036383531-Quais-s%C3%A3o-os-canais-de-atendimento-da-Acesso-Digital-) e solicite um convite.
+
+
+## Obtenha suas credenciais
+
+<!-- Que é um GP e CS? -->
+
+Após a criação de sua conta na Unico, você deverá solicitar uma conta de serviço para sua aplicação. A conta de serviço deve ser solicitada diretamente ao GP ou CS responsável por sua integração.
+
+Ao receber sua conta de serviço, você também receberá um arquivo (no formato `.pem`) contendo suas credenciais. O arquivo `.pem` será utilizado posteriormente no processo de autenticação das APIs.
+
+:::caution Importante
+
+É importante solicitar que o perfil `Integradores` seja adicionado a sua conta de serviço.
+
+:::
+
+## Teste sua integração
+
+Sugerimos que você efetue um teste rápido com suas credenciais, para isto:
+
+
+import Steps from '@site/src/components/Steps';
+
+<Steps headingDepth={3}>
+<ol>
+<li>
+
+### Obtenha um token OAuth válido;
+
+Para efetuar requisições a nossas APIs você necessitará de um token de acesso OAuth válido. Caso não esteja familizarizado com o modelo de autenticação OAuth, entenda como gerar um token válido [neste artigo](#). Após sua geração, o token de acesso deverá ser enviado no `header` de sua requisição.
+
+:::info Ambientes
+
+Ao iniciar sua integração você receberá credenciais a nosso ambiente de homologação. Sómente após o processo de testes e certificação você receberá credenciais de produção.
+
+Você deverá apontar suas requisições às URLs corretas em cada estágio de sua integração. Abaixo listamos as URLs de homologação e produção:
+
+- Ambiente de homologação: `https://signhom.acesso.io`;
+- Ambiente de produção: `https://sign.acesso.io`.
+
+:::
+
+</li>
+
+<li>
+
+### Faça uma requisição básica a nossa API
+
+Após obter um token de acesso válido, efetue uma requisição a um de nossos end-points e certifique-se que tudo está funcionando. Recomendamos um teste com o end-point que retorna os envelopes criados em sua conta. Abaixo um exemplo de como chamar este end-point:
+
+
+```bash
+
+curl --location --request POST '${URI}/api/v1/service/envelopes' \
+--header 'accept: */*' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer ${access_token}' \
+--data-raw '{}'
+
+
+```
+
+Se tudo der certo, você deverá receber um código HTTP 200 e caso possua algum envelope criado em sua conta uma resposta semelhante a esta:
+
+```json
+{
+    "Success": true,
+    "Message": "",
+    "Data": {
+        "Page": 1,
+        "MaxPage": 363,
+        "Count": 10886,
+        "Envelopes": [
+            {
+                "CreatedDate": "21/05/2018 17:24",
+                "ID_EnvelopeStatus": 1,
+                "EnvelopeStatus": "Pendente",
+                "UUID": "x11x111x-x11x-1111-11x1-11x111x1xx1x",
+                "Documents": [
+                    {
+                        "Url": "https://signhom.acesso.io/api/v1/service/file/y00y000y-y00y-0000-00y0-00y000y0yy00",
+                        "UrlVoucher": "https://sign.acesso.io/api/v1/service/evidence/y00y000y-y00y-0000-00y0-00y000y0yy00",
+                        "DocumentType": "Teste Core",
+                        "CreatedDate": "21/05/2018 17:24",
+                        "CompanySocialName": "ACESSO DIGITAL",
+                        "UUID": "y00y000y-y00y-0000-00y0-00y000y0yy00",
+                        "Subscribers": [
+                            {
+                                "SubscriberName": "Nome do Assinante Primeiro",
+                                "SubscriberCPF": "11122233344",
+                                "SubscriberEmail": "nome@email.com",
+                                "SubscriberPhone": "5511999988888",
+                                "SubscriberRole": 1,
+                                "URLFrameFull": "https://url/client/?token=JymY0s0s0s0d0sa0d0sd0sa0dsa0d"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
+
+
+```
+
+</li>
+</ol>
+
+</Steps>
+
+
+## Próximos passos
+
+A seguir recomendamos que você entenda um pouco mais sobre nossos [conceitos básicos](#) e logo em seguida navegue por nossos [guias de integração](#).
+
+Se você já conhece nossos guias e quer se aprofundar nos detalhes de nossas APIs acesse nosso [API Referecence](#).
+
+## Ficou com dúvidas?
+
+Esperamos ter ajudado com este artigo. Não encontrou algo ou ainda precisa de ajuda? 
+
+- Caso tenha dúvidas que não estejam relacionadas as nossas APIs, acesse nossa [central de ajuda](https://ajuda.unico.io/hc/pt-br/categories/360003086372-Unico-Sign);
+- Caso já seja um parceiro, entre em contato através de nosso [portal de solicitações](https://ajuda.unico.io/hc/pt-br/requests/new);
+
+
+

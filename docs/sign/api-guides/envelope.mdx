@@ -1,0 +1,466 @@
+---
+sidebar_position: 3
+sidebar_label: Solicitando assinaturas
+title: Solicitando assinaturas
+---
+
+## Sobre este guia
+
+Através deste guia, demonstraremos como solicitar assinturas eletrônicas de documentos através de nossas APIs REST. Ao seguir os passos deste guia, em poucos minutos você será capaz de: 
+
+- Solicitar assinaturas através da criação de envelopes;
+- Obter envelopes já criados;
+
+
+import HttpMethod from '@site/src/components/HttpMethod';
+
+Este fluxo está disponível através de nosso endpoint para a criação de envelopes: <HttpMethod method="POST">/service/envelope</HttpMethod>    
+
+
+:::info Documentos e envelopes
+
+Os documentos para assinatura sempre estarão contidos dentro de envelopes. Entenda um pouco mais sobre envelopes em nosso guia de conceitos básicos.
+
+:::
+
+
+## O que você vai precisar
+
+Antes de iniciar sua integração:
+
+1. Certifique-se que você possui credenciais válidas para utilizaro **Unico Sign**. Se você ainda não suas credenciais, siga nosso [guia de Primeiros Passos](#) para configurar sua conta de teste e obter sua chaves de API.
+2. Entenda os conceitos básicos sobre nosso produto. É extremamente importante que você entenda estes conceitos para fazer uma boa utilização das APIs do **Unico Sign**. Você pode encontrar nossos conceitos básicos [neste guia](#).
+
+## Funcionamento básico
+
+Como explicamos em nosso [guia de conceitos básicos](#), `Envelopes` são uma representação virtual de envelopes onde documentos são enviados e armazenados na vida real. Este tipo de objeto agrupa todos os documentos (`Documents`) assim como seus assinantes (`Subscribers`). 
+
+<!-- #TODO Incluir explicacão funcional de como funciona as assinaturas -->
+
+Ao criar um envelope, um e-mail e um SMS O e-mail conterá um link de assinatura que o destinatário pode usar para abrir e assinar eletronicamente um documento usando o aplicativo móvel da DocuSign ou o site da DocuSign. Após a conclusão da assinatura, o destinatário receberá uma cópia carbono (CC) do e-mail que inclui todos os documentos preenchidos e assinados.
+
+:::info 
+Um envelope deve conter pelo menos um documento, sendo aceito no máximo 10 documentos por envelope.
+:::
+
+Os elementos básicos para a criação de um `Envelope` são:
+
+1. Informações do emissor (`Emmiter`);
+2. Tipo de documento (Um PDF em base64 ou um template pré estabelecido);
+3. Informações de quem irá assinar o documento (`Subscriber`);
+4. Algumas informações adicionais, como por exemplo uma URL de callback;
+
+
+Entenda a seguir, como montar requisições para nosso end-point de criação de envelopes com os elementos relacionados acima.
+
+
+import Steps from '@site/src/components/Steps';
+
+<Steps headingDepth={3}>
+<ol>
+<li>
+
+
+### Definindo o emissor do envelope
+
+O emissor é o agente responsável pela criação do envelope e suas respectivas configurações. As seguintes informações do emissor são obrigatórias em sua requisição para a criação de um envelope:
+
+
+| Parâmetro	| Descrição |
+| --------- | ---- |
+| `EmitterUUID`  |	Identificação única do emissor. Possui o seguinte formato: XXXX. Caso não exista deve ser informado vazio no request (`"EmitterUserUUID": "",`) | 
+| `EmitterUserName`  |	Nome completo do emissor. Esta informação será exibida em XXXXX e XXXX. Não possui restrições formato e deve conter no máximo XXX caractéres | 
+| `EmitterEmail`  |	E-mail do emissor.  Utilizado para XXXXXX. Deve respeitar o formato email@example.com
+
+
+Exemplo:
+
+```json 
+"Documents": [
+        {
+            
+            ...
+            "EmitterUserUUID": "",
+            "EmitterUserName": "Nome do Emissor",
+            ...
+        }
+]
+```
+
+
+
+</li>
+
+
+
+<li>
+
+### Definindo o tipo de documento
+
+A criação de documentos em envelopes pode ser feita utilizando um template pré-estabelecido ou um documento PDF (convertido em base64). Entenda a seguir como utilizar ambos formatos em nossa API:
+
+#### Utilizando um arquivo PDF/Base64
+
+Para criar um documento através de um *PDF*, basta converver e enviar o arquivo *PDF* através de nossa API. Para isto, o conteúdo de seu arquivo *PDF* deverá ser enviado através do campo `FileBase64`, codificado em em *Base64*.
+
+:::info Arquivos *Base64*
+
+Base64 é um método para codificação de dados para transferência na Internet (codificação MIME para transferência de conteúdo). É utilizado frequentemente para transmitir dados binários por meios de transmissão que lidam apenas com texto, como por exemplo para enviar arquivos anexos por e-mail ou API. Saiba mais [neste link](https://developer.mozilla.org/en-US/docs/Glossary/Base64)
+
+:::
+
+Abaixo um exemplo utilizando o campo `FileBase64`:
+
+```json
+ "Documents": [
+    {
+        "EmitterUserUUID": "",
+        "EmitterUserName": "Nome do Emissor",
+        "DocumentType": "Nome do Documento",
+        "FileBase64": "JVBERi0xLjMKJbrfrOAKMyAwIG9iago8......PgplbmRvYmoKMTEgMCBvYmoKPDwKL1R5cGUgL0ZvbnQKL0Jhc2VGb250IC9Db3Vy",
+        "Subscribers": [
+            {
+                "SubscriberName": "Assinante Um",
+                "SubscriberCPF": "12345678901",
+                "SubscriberEmail": "assinante@email.com",
+                "SubscriberPhone": "5511999999999",
+                "SubscriberOrder": 1,
+                "AuthCode": "CódigoDeAcessoWeb"
+            }
+        ]
+    }
+]
+```
+
+
+:::caution Campos de templates
+
+Caso utilize um arquivo PDF codificado em *Base64* para a criação de seu documento, os campos de template **não** devem ser preenchidos.
+
+:::
+
+#### Utilizando um modelo (template pré-definido)
+
+Templates representam modelos de documentos que normalmente são utilizados em casos de envios recorrentes, como por exemplo holerites ou folhas de ponto. Além disso, estes modelos podem conter formulários para que o assinante preencha informações relevantes no momento da assinatura do documento. Entenda como utilizar modelos (templates) em suas requisições:
+
+Para criar um documento através de um **Template**, basta informar seu UUID em sua requisição. Para isto, o UUID deverá ser enviado através do campo `TemplateUUID”`.
+
+:::note Template UUID
+
+Por enquanto não disponibilizamos os UUID dos templates por API ou em nosso painel. Para obter o UUID do template desejado, entre em contato com nosso suporte técnico através de nossa [central de ajuda](#).
+
+:::
+
+{/* #TODO Confirmar info abaixo */}
+
+
+Caso o assinante necessite preencher algum campo do modelo, utilize o parâmetro `TemplateFields` informando os campos a serem preenchidos através dor de parâmetros `FieldCode` e `FieldValue` da seguinte forma:
+
+- O campo `FieldCode` deverá conter exatamente o mesmo nome especificado no template; #TODO (case sensitive? confirmar);
+- Caso deseje enviar o campo pré-preenchido no modelo, informe o valor desejado no parâmetro `FieldValue` correspondente ao campo;
+- Caso não deseje enviar o campo pré-preenchido no modelo, envie `null` no parâmetro `FieldValue` correspondente ao campo;
+
+No exemplo abaixo, o formulário viria com o nome de a idade pré-preenchidos (possível alterar? #TODO Confirmar) e o campo CPF viria em branco para preenchimento. Todos os campos informados no parâmetro `TemplateFields` serão de preenchimento obrigatório. #TODO Confirmar
+
+```json
+"Documents": [
+        {
+            "EmitterUserUUID": "",
+            "EmitterUserName": "Nome do Emissor",
+            "DocumentType": "Nome do Documento",
+            "FileBase64": "Base64File",
+            "UnitUUID": null,
+            "TemplateUUID": "d610d146-d658-428c-9c63-2067807fb22a",
+            "TemplateFields": [
+                {
+                    "FieldCode": "nome",
+                    "FieldValue": "João da Silva"
+                },
+                {
+                    "FieldCode": "idade",
+                    "FieldValue": 30
+                },
+                {
+                    "FieldCode": "cpf",
+                    "FieldValue": null
+                }
+            ],
+            "Subscribers": [...]
+    ]           
+} 
+
+```
+
+
+:::info Múltiplos tipos de documentos
+
+Um envelope pode combinar documentos de ambos os tipos (PDF/Base64 e proveninentes de templates).
+
+:::
+
+
+</li>
+
+<li>
+
+### Definindo quem irá assinar os documentos
+
+O assinante é o agente final do envelope, ou seja, é quem irá realizar a assinatura, concluindo o envelope, ou o recusando. A configuração de assinantes deve respeitar as seguintes regras:
+
+- Os assinantes devem ser os mesmos em todos os documentos contidos no envelope;
+- Cada documento precisa ter no mínimo um assinante;
+- Cada documento pode possuir mais de 1 assinante;
+
+A ordem de em que as assinaturas serão solicitadas deverá respeitar as seguintes regras:
+
+- Em documentos gerados através de um template, você poderá selecionar um dos assinantes para receber a notificação primeiro. Os demais assinantes receberá na ordem indicada 
+- Os assinantes podem possuir o mesmo número de ordem, isso fará com que eles recebam a notificação no mesmo momento.
+- Em documentos gerados através de um PDF, todos os assinantes serão notificados ao mesmo tempo.
+
+:::tip Assinantes, documentos e envelopes
+
+É importante entender que assinantes pertencem ao documento e documentos pertencem ao envelope.
+
+::: 
+
+</li>
+
+<li>
+
+### Configurações adicionais
+
+Disponibilizamos algumas configurações adicionais que podem ser utilizadas no momento da criação de um envelope: 
+
+| Parâmetro	| Descrição |
+| --------- | ---- |
+| `IsFrame`  |	Deve ser enviado como `true` caso você deseje utilizar o fluxo de assinatura dentro de sua aplicação. Caso seja enviado como `true` retornaremos uma URL (no parâmetro `UrlFrameFull`) que pode ser injetada em sua aplicação (em um iFrame, por exemplo).  | 
+| `UrlCallback`  |	URL de callback onde enviaremos notificações após o envelope ser finalizado, ou seja, sempre que o status do envelope mudar para  `2 - Concluído`, `3 - Cancelado` ou `5 - Recusado`. | 
+
+:::caution IsFrame e notificações
+
+Caso o parametro IsFrame esteja ativo, os assinantes não irão receber nenhum tipo de notificação.
+
+:::
+
+
+</li>
+
+<li>
+
+### Juntando todas as peças
+
+Tudo que mostramos nos passos acima deverá compor o corpo de uma requisição para nossas APIs REST. 
+
+Abaixo um exemplo juntando tudo que mostramos nos passos acima:
+
+```json
+
+{
+    "EnvelopeFlow": [
+        {
+            "ID_Flow": 1
+        },
+        {
+            "ID_Flow": 3
+        }
+    ],
+    "IsFrame": "false",
+    "UrlCallback": "https://callback.com",
+    "Documents": [
+        {
+            "EmitterUserUUID": "",
+            "EmitterUserName": "Nome do Emissor",
+            "DocumentType": "Nome do Documento",
+            "FileBase64": "Base64File",
+            "UnitUUID": null,
+            "TemplateUUID": "d610d146-d658-428c-9c63-2067807fb22a",
+            "TemplateFields": [
+                {
+                    "FieldCode": "Campo1",
+                    "FieldValue": "teste"
+                },
+                {
+                    "FieldCode": "Campo2",
+                    "FieldValue": 0
+                },
+                {
+                    "FieldCode": "Campo3",
+                    "FieldValue": NULL
+                }
+            ],
+            "Subscribers": [
+                {
+                    "SubscriberName": "Assinante Um",
+                    "SubscriberCPF": "12345678901",
+                    "SubscriberEmail": "assinante@email.com",
+                    "SubscriberPhone": "5511999999999",
+                    "SubscriberOrder": 1,
+                    "AuthCode": "CódigoDeAcessoWeb"
+                }
+            ]
+        }
+    ]
+}
+
+```
+
+
+
+
+
+
+</li>
+
+<li>
+
+### Faça uma requisição para o endpoint `/envelope/`
+
+
+Após montar o corpo da requisição e gerar um token de acesso válido, faça uma requisição para o endpoint de criação de envelopes de nossa API REST (<HttpMethod method="POST">/service/envelope</HttpMethod>).
+
+Abaixo um exemplo da requisição:
+
+
+```bash
+curl -X 'POST' \
+  'https://sign-core-uat.acesso.io/api/v1/service/envelope' \
+  -H 'accept: */*' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "Documents": [
+    {
+      "Url": "string",
+      "UrlVoucher": "string",
+      "DocumentType": "string",
+      "CreatedDate": "string",
+      "ID_DocumentStatus": 0,
+      "DocumentStatusName": "string",
+      "ID_EnvelopeStatus": 0,
+      "EnvelopeStatusName": "string",
+      "EmitterUserName": "string",
+      "EmitterUserUUID": "string",
+      "EmitterUserEmail": "string",
+      "CompanySocialName": "string",
+      "UUID": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "FileBase64": "string",
+      "File": "string",
+      "HasFile": true,
+      "UnitUUID": "string",
+      "Subscribers": [
+        {
+          "ID_Subscriber": 0,
+          "SubscriberName": "string",
+          "SubscriberCPF": "string",
+          "SubscriberEmail": "string",
+          "SubscriberPhone": "string",
+          "SubscriberUUID": "string",
+          "AuthCode": "string",
+          "ID_SubscriberStatus": 0,
+          "SubscriberStatus": "string",
+          "SubscriberOrder": 0,
+          "SubscriberRole": 0,
+          "SubscriberOrganization": "string",
+          "SubscriberAccess": [
+            {
+              "ID_Event": 0,
+              "AccessDate": "2022-09-12T03:24:48.671Z",
+              "AccessSource": "string",
+              "EventDateTime": "string",
+              "GeoLocation": "string",
+              "GeoFormattedAddress": "string",
+              "IP": "string",
+              "LogicalPort": "string",
+              "UserGMT": "string",
+              "UserAgent": "string",
+              "UserUUID": "string",
+              "UserCPF": "string",
+              "JTI": "string",
+              "EventData": "string",
+              "EventDescription": "string",
+              "GeoLat": "string",
+              "GeoLong": "string"
+            }
+          ],
+          "URLFrame": "string",
+          "URLFrameFull": "string",
+          "SignatureImage": "string",
+          "EmailNotification": "string",
+          "IsUser": true,
+          "IsLast": true
+        }
+      ],
+      "EnvelopeFlow": [
+        {
+          "ID_Flow": 0
+        }
+      ],
+      "Audit": [
+        {
+          "ID_AuditEvent": 0,
+          "UserName": "string",
+          "EventDateTime": "string",
+          "EventData": "string",
+          "EventDescription": "string"
+        }
+      ],
+      "IsTemplate": true,
+      "ID_Template": 0,
+      "TemplateUUID": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "DocumentSubcategoryUUID": "string",
+      "DocumentSubcategoryName": "string",
+      "DocumentCategoryUUID": "string",
+      "DocumentCategoryName": "string",
+      "TemplateFields": [
+        {
+          "FieldCode": "string",
+          "FieldValue": "string"
+        }
+      ],
+      "HasTemplateFields": true
+    }
+  ],
+  "IsFrame": true,
+  "UrlCallback": "string",
+  "EnvelopeFlow": [
+    {
+      "ID_Flow": 0
+    }
+  ],
+  "TenantID": "string"
+}'
+
+```
+
+Se tudo der certo em sua requisição, você receberá como respota:
+
+```text
+ assdad
+xxxxx
+
+```
+
+
+
+</li>
+
+
+</ol>
+
+</Steps>
+
+
+## Próximos passos
+
+- Conheça outras funcionalidades disponíveis para o [Gerenciamento de documentos](/docs/category/gerenciando-documentos).
+- Conheça outras funcionalidades disponíveis para o [Gerenciamento de envelopes](/docs/category/gerenciando-envelopes).
+- Tendo problemas em nossa integração? Acesse nossa sessão de [FAQ e problemas comuns](/FAQ).
+- Explore a documentacão da API do Unico Sign em nosso [API Reference](#).
+
+## Ficou com dúvidas?
+
+Esperamos ter ajudado com este artigo. Não encontrou algo ou ainda precisa de ajuda? 
+
+- Caso tenha dúvidas que não estejam relacionadas as nossas APIs, acesse nossa [central de ajuda](https://ajuda.unico.io/hc/pt-br/categories/360003086372-Unico-Sign).
+- Caso já seja um parceiro, entre em contato através de nosso [portal de solicitações](https://ajuda.unico.io/hc/pt-br/requests/new).
+
+

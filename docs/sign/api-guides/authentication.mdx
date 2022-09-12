@@ -1,0 +1,254 @@
+---
+sidebar_position: 2
+sidebar_label: Autenticação
+title: Autenticação
+---
+
+
+
+## Sobre este guia
+
+Através deste guia, explicaremo como gerar um Token de Acesso (AccessToken) em nossa plataforma de autenticação OAuth2, através de um JSON Web Token (JWT) assinado com SHA256withRSA.  Ao seguir os passos deste guia, em poucos minutos você será capaz de ter tudo pronto para efetuar requisições para nossas APIs REST.
+
+## O que você vai precisar
+
+Antes de iniciar sua integração:
+
+1. Certifique-se que você possui credenciais válidas para utilizar o **Unico Sign**. Se você ainda não possui suas credenciais, siga nosso [guia de Primeiros Passos](#) para configurar sua conta de teste e obter suas chaves de API.
+2. Entenda os conceitos básicos sobre nosso produto. É extremamente importante que você entenda estes conceitos para fazer uma boa utilização das APIs do **Unico Sign**. Você pode encontrar nossos conceitos básicos [neste guia](#).
+
+## Funcionamento básico
+
+Para utilizar a API REST do **Unico Sign**, você deverá efetuar uma requisição ao nosso servidor de autenticação para obter um Token de Acesso válido.
+
+Entenda, a seguir, como gerar manualmente seu JWT assinado e com ele obter um token de acesso válido:
+
+import Steps from '@site/src/components/Steps';
+
+<Steps headingDepth={3}>
+<ol>
+
+<li>
+
+### Solicite uma conta de serviço
+
+
+Para utilizar nossas APIs, você precisará solicitar a criação de uma conta de serviço ao gerente de projetos responsável por sua conta. Ao criar sua conta, enviaremos um e-mail contendo os dados necessários sua autenticação:
+
+- Nome de conta;
+- Identificador de sua empresa (Tenant ID);
+- ID da chave;
+
+Todas as informações listadas acima serão utilizadas na geração de seu JWT nos passos abaixo.
+
+</li>
+
+
+<li>
+
+### Gere um JWT (JSON Web Token)
+
+import CodeHighlight from '@site/src/components/CodeHighlight';
+
+Para obter um Token de Acesso válido, você deverá enviar um JWT na requisição ao nosso servidor de autenticação. Este JWT é composto por três blocos (header, payload e assinatura) codificados, e separados pelo caractere `.` (ponto final). 
+
+:::note 
+
+Ao longo deste guia vamos destacar a cor de fundo do header, payload e assinatura para simplificar o entendimento.
+
+
+:::
+
+
+Abaixo o detalhe de cada um dos blocos:
+
+#### Header
+
+O header para geração do JWT deverá conter os parâmetros `alg` (algorítimo de assinatura) e `typ` (tipo do token). Em nosso caso, sempre utilizaremos:
+
+```json
+{
+  "alg": "RS256",
+  "typ": "JWT"
+}
+```
+
+Após codificação em **Base64URL**: <CodeHighlight color="#25c2a0"> eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9 </CodeHighlight> 
+
+#### Payload
+
+O payload para geração do JWT deverá conter os seguintes atributos:
+
+| Parâmetro	| Descrição |
+| --------- | ---- |
+| `iss`  | Client Id de sua aplicação. Será composto através de alguns de seus dados de acesso, no seguinte formato: service_account_name@tenant_id.iam.acesso.io | 
+| `scope`  |	Os escopos necessários para sua aplicação, separados pelo caractere `+`. Caso necessite todos os escopos utilize o caractere `*`. | 
+| `aud`  |	URI do serviço de autenticação. Utilize `https://identityhomolog.acesso.io` para o ambiente de homologação e `https://identity.acesso.io` para o ambiente de produção. | 
+| `iat`  |	Data e hora da criação do token no formato [Unix Epoch](https://www.epochconverter.com/).  | 
+| `exp`  |	Data e hora de expiração do token no formato [Unix Epoch](https://www.epochconverter.com/). Deve possuir uma hora a mais que o parâmetro `iat`, sendo gerado da seguinte forma: Valor do `iat` + 3600 | 
+
+Exemplo de JSON:
+
+```json
+{
+  "iss": "service_account_name@tenant_id.iam.acesso.io",
+  "aud": "https://identityhomolog.acesso.io",
+  "scope": "*",
+  "exp": 1626296976,
+  "iat": 1626293376
+}
+```
+
+Após codificação em **Base64URL**: <CodeHighlight color="#1877f24d"> eyJpc3MiOiJzZXJ2aWNlX2FjY291bnRfbmFtZUB0ZW5hbnRfaWQuaWFtLmFjZXNzby5pbyIsImF1ZCI6Imh0dHBzOi8vaWRlbnRpdHlob21vbG9nLmFjZXNzby5pbyIsInNjb3BlIjoiKiIsImV4cCI6MTYyNjI5Njk3NiwiaWF0IjoxNjI2MjkzMzc2fQ </CodeHighlight>   
+
+#### Assinatura
+
+
+Por último, vamos gerar a assinatura do JWT utilizando da chave privada enviada para o seu e-mail. A assinatura é o que permitirá que a Unico saiba que o JWT foi criado por sua aplicação.
+
+As primeiras duas partes do JWT (gerada acima) deverão ser assinadas com a chave privada associada a sua conta de serviço, utilizando SHA256withRSA. Esse algoritmo primeiro calcula um hash exclusivo com os dados de entrada usando SHA256. O hash é então criptografado com uma chave privada usando o algoritmo RSA.
+
+:::tip Bibliotecas para geração do JWT assinado
+
+Existem inúmeras biblíotecas que podem te auxiliar a gerar esta assinatura. Você pode consultar algumas delas no site da ferranenta [jwt.io](https://jwt.io])
+
+:::
+
+O conteúdo de entrada para o cálculo da assinatura será: `{Header em Base64url}.{Payload em Base64url}`, exemplo utilizando o header e payload acima:
+
+*Exemplo de conteúdo enviado para assinatura:* <CodeHighlight color="#25c2a0">eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9</CodeHighlight>. <CodeHighlight color="#1877f24d"> eyJpc3MiOiJzZXJ2aWNlX2FjY291bnRfbmFtZUB0ZW5hbnRfaWQuaWFtLmFjZXNzby5pbyIsImF1ZCI6Imh0dHBzOi8vaWRlbnRpdHlob21vbG9nLmFjZXNzby5pbyIsInNjb3BlIjoiKiIsImV4cCI6MTYyNjI5Njk3NiwiaWF0IjoxNjI2MjkzMzc2fQ</CodeHighlight>
+
+Após sua geração, a assinatura deverá ser também codificada em Base64URL:
+
+*Exemplo de assinatura já codificada* : <CodeHighlight color="#b818f2d9"> JsymP3NZdgCSqeNlgsOM2-AQ7M450NxFnZnnaKSu4Q8g12QGEIvvM4EhCokUHfwk5s7pOpm2UD_Ng3Hb5g_wgrjfiVSLWH5Q2wYg1AvfLqoYSoJWaMHm9KL0kpv32XdDD8TZVR-MVd2VBHmCMVbV6gvk8buUoK1HZDN7g84PaY3bfgcB3RKU-H55lR8yyJjZxToIv17-wfla2G99uaMEFNGX0ZSE7ETn5Z8-WypmFrNAK0TM58upzvfVI6_-gY4cj4iQvmRbuvxsAaGiHA2xd0RVm2Mrx-gQtdPqtbZPuQcH7k64Z_EOQBgiGTgVjucyHD6zBijr_P-2mhIxuecNSw </CodeHighlight>
+
+#### Montando o JWT
+
+Agora basta concatenar a assinatura codificada em Base64URL ao header e payload que foram utilizados para a assinatura: `{Header em Base64url}.{Payload em Base64url}.{Assinatura em Base64url}`. Abaixo um exemplo com o Header, Payload e assinatura utilizados acima:
+
+*Exemplo do JWT Assinado:* <CodeHighlight color="#25c2a0">eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9</CodeHighlight>.<CodeHighlight color="#1877f24d">eyJpc3MiOiJzZXJ2aWNlX2FjY291bnRfbmFtZUB0ZW5hbnRfaWQuaWFtLmFjZXNzby5pbyIsImF1ZCI6Imh0dHBzOi8vaWRlbnRpdHlob21vbG9nLmFjZXNzby5pbyIsInNjb3BlIjoiKiIsImV4cCI6MTYyNjI5Njk3NiwiaWF0IjoxNjI2MjkzMzc2fQ</CodeHighlight>.<CodeHighlight color="#b818f2d9"> JsymP3NZdgCSqeNlgsOM2-AQ7M450NxFnZnnaKSu4Q8g12QGEIvvM4EhCokUHfwk5s7pOpm2UD_Ng3Hb5g_wgrjfiVSLWH5Q2wYg1AvfLqoYSoJWaMHm9KL0kpv32XdDD8TZVR-MVd2VBHmCMVbV6gvk8buUoK1HZDN7g84PaY3bfgcB3RKU-H55lR8yyJjZxToIv17-wfla2G99uaMEFNGX0ZSE7ETn5Z8-WypmFrNAK0TM58upzvfVI6_-gY4cj4iQvmRbuvxsAaGiHA2xd0RVm2Mrx-gQtdPqtbZPuQcH7k64Z_EOQBgiGTgVjucyHD6zBijr_P-2mhIxuecNSw </CodeHighlight>.
+
+</li>
+
+<li>
+
+### Faça uma requisição para obter o token de acesso
+
+import HttpMethod from '@site/src/components/HttpMethod';
+
+Após gerar um JWT assinado, faça uma requisição para nossa plataforma de autenticação (<HttpMethod method="POST"> /oauth2/token</HttpMethod>) enviando os parâmetros conforme a tabela abaixo:
+
+
+| Parâmetro	| Descrição |
+| --------- | ---- |
+| `grant_type`  | Enviar sempre o valor `urn:ietf:params:oauth:grant-type:jwt-bearer` | 
+| `assertion`  | JWT assinado, como gerado acima	 | 
+
+Abaixo um exemplo com o JWT gerado nos passos acima:
+
+```bash
+curl --location --request POST 'https://identityhomolog.acesso.io' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer' \
+--data-urlencode 'assertion=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzZXJ2aWNlX2FjY291bnRfbmFtZUB0ZW5hbnRfaWQuaWFtLmFjZXNzby5pbyIsImF1ZCI6Imh0dHBzOi8vaWRlbnRpdHlob21vbG9nLmFjZXNzby5pbyIsInNjb3BlIjoiKiIsImV4cCI6MTYyNjI5Njk3NiwiaWF0IjoxNjI2MjkzMzc2fQ.JsymP3NZdgCSqeNlgsOM2-AQ7M450NxFnZnnaKSu4Q8g12QGEIvvM4EhCokUHfwk5s7pOpm2UD_Ng3Hb5g_wgrjfiVSLWH5Q2wYg1AvfLqoYSoJWaMHm9KL0kpv32XdDD8TZVR-MVd2VBHmCMVbV6gvk8buUoK1HZDN7g84PaY3bfgcB3RKU-H55lR8yyJjZxToIv17-wfla2G99uaMEFNGX0ZSE7ETn5Z8-WypmFrNAK0TM58upzvfVI6_-gY4cj4iQvmRbuvxsAaGiHA2xd0RVm2Mrx-gQtdPqtbZPuQcH7k64Z_EOQBgiGTgVjucyHD6zBijr_P-2mhIxuecNSw'
+
+```
+
+Se tudo der certo em sua requisição, você receberá como resposta um JSON contendo um token de acesso válido:
+
+```json
+{
+  "access_token": "<access_token>",
+  "token_type": "Bearer",
+  "expires_in": "3600",
+}
+```
+
+:::caution Validade do Token
+
+A duração do token de acesso estará informada no campo “expires_in”. Não solicite um novo token de acesso até que a validade do token atual esteja chegando ao fim. 
+
+Sugerimos que solicite um novo token 10 minutos antes da expiração.
+
+:::
+
+
+Em casos de erro, retornaremos como resposta um JSON como o abaixo:
+
+```json
+{
+  "error": "server_error",
+  "error_description": "Falha na autenticação x.x.x",
+}
+```
+
+:::info Erros ao chamar o endpoint de autorização
+
+Você pode consultar os códigos de erros neste mesmo artigo, na sessão [Códigos de erro](#tabela-de-erros).
+
+:::
+
+</li>
+
+
+<li>
+
+### Use seu token de acesso para chamar nossas APIs
+
+Agora que você obteve um token de acesso válido, basta chamar a API REST do **Unico Sign** utilizando este token no header de suas requisições. Abaixo um exemplo:
+
+```bash
+curl -X 'POST' \
+  'https://sign-core-uat.acesso.io/api/v1/service/envelopes' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer {{ACCESS_TOKEN}}'
+  -d '{
+  "CPF": "10000000019",  
+  "StartDate": "01/08/2022",
+  "EndDate": "31/08/2022",
+  "Status": 1,
+  "Order": "ASC"
+}'
+```
+
+</li>
+
+</ol>
+</Steps>
+
+## Códigos de erro
+
+Caso sua requisição apresente algum erro, você pode consultar o motivo do erro na tabela abaixo:
+
+| Código	| Descrição |
+| --------- | ---- |
+| 1.0.14 | Verifique com o responsável pelo projeto se a aplicação utilizada está ativa. |
+| 1.1.1 | Parâmetro "scope" não foi informado no payload do token jwt utilizado na requisição. |
+| 1.2.4 | O token jwt utilizado na requisição está expirado. Verifique o valor informado no campo "exp" do payload. |
+| 1.2.5 | O token jwt utilizado na requisição não pode ser validado. Verifique os parâmetros informados e tenha certeza de tê-lo assinado da forma correta. |
+| 1.2.6 | A chave privada utilizada na assinatura do token jwt utilizado na requisição não é mais aceitável. Solicite novas credenciais para a conta utilizada. |
+| 1.2.7 | O token jwt utilizado na requisição não é mais aceitável, pois já foi utilizado anteriormente. Gere um novo token para fazer uma nova requisição. |
+| 1.2.11 | A conta utilizada não está ativa. |
+| 1.2.14 | A conta utilizada não possui as permissões necessárias. |
+| 1.2.18 | A conta utilizada foi temporariamente bloqueada por ter excedido a quantidade de tentativas inválidas de autenticação. |
+| 1.2.19 | A conta utilizada não está autorizada a impersonar outra conta de usuário (remova o parâmetro "sub" do payload). |
+| 1.2.20 / 1.2.21  | Falha na decodificação do token jwt utilizado na requisição. Utilize um novo token inserindo somente os campos especificados nas seções "Campos obrigatórios" e "Campos adicionais", obedecendo à nomenclatura, semântica e tipo de cada campo. |
+| 1.2.22 | O token jwt utilizado na requisição possui campos adicionais no payload que não são permitidos. Utilize um novo token inserindo somente os campos especificados nas seções "Campos obrigatórios" e "Campos adicionais", obedecendo à nomenclatura, semântica e tipo de cada campo. |
+| 1.3.1 | A conta utilizada possui restrições de IP de origem. |
+| 1.3.2 | A conta utilizada possui restrições de data/hora de acesso. |
+
+## Próximos passos
+
+- Conheça outras funcionalidades disponíveis para o [Gerenciamento de documentos](/docs/category/gerenciando-documentos).
+- Conheça outras funcionalidades disponíveis para o [Gerenciamento de envelopes](/docs/category/gerenciando-envelopes).
+- Tendo problemas em nossa integração? Acesse nossa sessão de [FAQ e problemas comuns](/FAQ).
+- Explore a documentacão da API do Unico Sign em nosso [API Reference](#).
+
+## Ficou com dúvidas?
+
+Esperamos ter ajudado com este artigo. Não encontrou algo ou ainda precisa de ajuda? 
+
+- Caso tenha dúvidas que não estejam relacionadas as nossas APIs, acesse nossa [central de ajuda](https://ajuda.unico.io/hc/pt-br/categories/360003086372-Unico-Sign).
+- Caso já seja um parceiro, entre em contato através de nosso [portal de solicitações](https://ajuda.unico.io/hc/pt-br/requests/new).
+

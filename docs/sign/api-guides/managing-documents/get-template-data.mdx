@@ -1,0 +1,130 @@
+---
+sidebar_position: 3
+sidebar_label: Obter dados de modelo
+title: Obter dados de modelo
+---
+
+## Sobre este guia
+
+Através deste guia, demonstraremos como obter dados preenchidos em um documento gerado a partr de um modelo através de nossa API REST. Ao seguir os passos deste guia, em poucos minutos você será capaz de obter todos os dados inseridos pelos usuários em seus documentos.
+
+## O que você vai precisar
+
+Antes de iniciar sua integração:
+
+1. Certifique-se que você possui credenciais válidas para utilizaro **Unico Sign**. Se você ainda não suas credenciais, siga nosso [guia de Primeiros Passos](#) para configurar sua conta de teste e obter sua chaves de API.
+2. Entenda os conceitos básicos sobre nosso produto. É extremamente importante que você entenda estes conceitos para fazer uma boa utilização das APIs do **Unico Sign**. Você pode encontrar nossos conceitos básicos [neste guia](#).
+
+## Funcionamento básico
+
+Como explicamos em nosso [guia de conceitos básicos](#), **Documentos** (`document`) são a representação virtual de um documento que deve ser assinado (por um ou mais assinanates) e pode ser gerado a patir de um arquivo PDF ou de um modelo (`Template`). Documentos gerados a partir de template podem possuir campos preenchíveis pelos usuários que irão assinar o documento.
+
+Entenda a seguir, como obter um arquivo PDF de um documentos pertencente a um de seus envelopes:
+
+
+import Steps from '@site/src/components/Steps';
+
+<Steps headingDepth={3}>
+<ol>
+
+<li>
+
+### Obtenha um token OAuth válido;
+
+Para efetuar requisições à nossa API REST você necessitará de um token de acesso OAuth válido. Caso não esteja familizarizado com o modelo de autenticação OAuth, entenda como gerar um token válido [neste artigo](#). Após sua geração, o token de acesso deverá ser enviado no `header` de sua requisição, junto ao parâmetro `Authorization`.
+
+:::info Ambientes
+
+Ao iniciar sua integração você receberá credenciais a nosso ambiente de homologação. Sómente após o processo de testes e certificação você receberá credenciais de produção.
+
+Você deverá apontar suas requisições às URLs corretas em cada estágio de sua integração. Abaixo listamos as URLs de homologação e produção:
+
+- Ambiente de homologação: `https://signhom.acesso.io`;
+- Ambiente de produção: `https://sign.acesso.io`.
+
+:::
+
+</li>
+
+
+<li>
+
+### Faça uma requisição para o endpoint `/templatedata/`
+
+import HttpMethod from '@site/src/components/HttpMethod';
+
+Após gerar um token de acesso válido, faça uma requisição para o endpoint de geração de arquivos PDF de nossa API REST (<HttpMethod method="GET">/service/templatedata</HttpMethod>), especificando qual documento deseja como um parâmetro no path da requisição.
+
+Abaixo um exemplo da requisição:
+
+:::note Document UUID
+
+Não se esqueça de subsctituir o parâmetro `DOCUMENT_UUID` na requisição abaixo. Este parâmetro deve conter o UUID do documento ao qual você deseje gerar as evidências.
+
+Exemplo de formato de um UUID: 00000000-0000-0000-0000-000000000000
+
+:::
+
+```bash
+curl -X 'GET' \
+  'https://sign-core-dev.acesso.io/api/v1/service/templatedata/{{DOCUMENT_UUID}}' \
+  -H 'accept: application/pdf' \
+  -H 'Authorization: Bearer {{ACCESS_TOKEN}}'
+
+```
+
+Se tudo der certo em sua requisição, você receberá como respota um JSON contendo uma lista com os campos do template:
+
+```json
+{
+    "Success": true,
+    "Message": "",
+    "Data": {
+        "UUID": "d610d146-d658-428c-9c63-2067807fb22a",
+        "TemplateFields": [
+            {
+                "FieldCode": "CampoTextBox",
+                "FieldValue": "Reposta Modelo"
+            },
+            {
+                "FieldCode": "CampoCheckBox1",
+                "FieldValue": "1"
+            },
+            {
+                "FieldCode": "CampoRadioATrue",
+                "FieldValue": "0"
+            },
+            {
+                "FieldCode": "CampoRadioAFalse",
+                "FieldValue": "1"
+            }
+        ]
+    }
+}
+```
+
+Cada elemento do objeto `TemplateFields` representa um campo no template, sendo que:  
+
+- O parâmetro `FieldCode` representa o nome do campo;
+- O parâmetro `FieldValue` representa o valor preenchido no campo correpondente;  
+
+</li>
+
+</ol>
+
+</Steps>
+
+## Próximos passos
+
+- Conheça outras funcionalidades disponíveis para o [Gerenciamento de documentos](/docs/category/gerenciando-documentos).
+- Conheça outras funcionalidades disponíveis para o [Gerenciamento de envelopes](/docs/category/gerenciando-envelopes).
+- Tendo problemas em nossa integração? Acesse nossa sessão de [FAQ e problemas comuns](/FAQ).
+- Explore a documentacão da API do Unico Sign em nosso [API Reference](#).
+
+## Ficou com dúvidas?
+
+Esperamos ter ajudado com este artigo. Não encontrou algo ou ainda precisa de ajuda? 
+
+- Caso tenha dúvidas que não estejam relacionadas as nossas APIs, acesse nossa [central de ajuda](https://ajuda.unico.io/hc/pt-br/categories/360003086372-Unico-Sign).
+- Caso já seja um parceiro, entre em contato através de nosso [portal de solicitações](https://ajuda.unico.io/hc/pt-br/requests/new).
+

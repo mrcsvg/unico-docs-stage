@@ -1,0 +1,13 @@
+.url {
+    padding-top: 0.1rem;
+    font-size: 13px;
+  }
+  
+.method {
+    padding: 0.2rem 0.5rem;
+    font-size: var(--ifm-font-size);
+    font-weight: 600;
+    margin-right: 0.5rem;
+    border-radius: var(--ifm-global-radius);
+    background: rgba(145, 33, 194, 0.2);
+}

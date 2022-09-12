@@ -1,0 +1,125 @@
+---
+sidebar_position: 5
+sidebar_label: Gerenciamento de contatos
+title: Gerenciamento de contatos
+---
+
+## Sobre este guia
+
+Através deste guia, demonstraremos como alterar ou criar contatos através de nossa API REST. Ao seguir os passos deste guia, em poucos minutos você será capaz de criar ou alterar contatos com apenas um endpoint.
+
+## O que você vai precisar
+
+Antes de iniciar sua integração:
+
+1. Certifique-se que você possui credenciais válidas para utilizar o **Unico Sign**. Se você ainda não possui suas credenciais, siga nosso [guia de Primeiros Passos](#) para configurar sua conta de teste e obter suas chaves de API.
+2. Entenda os conceitos básicos sobre nosso produto. É extremamente importante que você entenda estes conceitos para fazer uma boa utilização das APIs do **Unico Sign**. Você pode encontrar nossos conceitos básicos [neste guia](#).
+
+## Funcionamento básico
+
+Através deste endpoint, você poderá criar ou editar contatos utilizando um CPF como chave única de consulta.
+
+Caso o CPF enviado na requisição ainda não esteja cadastrado, um novo contato associado a sua conta será criado. Caso o CPF já existam, atualizaremos os dados do contato com as informações enviadas na requisição.
+
+Entenda, a seguir, como chamar nossa API REST para criar ou editar contatos:
+
+import Steps from '@site/src/components/Steps';
+
+<Steps headingDepth={3}>
+<ol>
+
+<li>
+
+### Obtenha um token OAuth válido;
+
+Para efetuar requisições à nossa API REST você necessitará de um token de acesso OAuth válido. Caso não esteja familizarizado com o modelo de autenticação OAuth, entenda como gerar um token válido [neste artigo](#). Após sua geração, o token de acesso deverá ser enviado no `header` de sua requisição, junto ao parâmetro `Authorization`.
+
+:::info Ambientes
+
+Ao iniciar sua integração você receberá credenciais a nosso ambiente de homologação. Sómente após o processo de testes e certificação você receberá credenciais de produção.
+
+Você deverá apontar suas requisições às URLs corretas em cada estágio de sua integração. Abaixo listamos as URLs de homologação e produção:
+
+- Ambiente de homologação: `https://signhom.acesso.io`;
+- Ambiente de produção: `https://sign.acesso.io`.
+
+:::
+
+</li>
+
+<li>
+
+### Faça uma requisição POST para o endpoint `/cancel/`
+
+import HttpMethod from '@site/src/components/HttpMethod';
+
+Após gerar um token de acesso válido, faça uma requisição para o endpoint de gerenciamento de contatos da nossa API REST (<HttpMethod method="POST">/service/contact</HttpMethod>) enviando os parâmetros conforme o schema abaixo:
+
+import ApiSchema from '@theme/ApiSchema';
+
+<ApiSchema pointer="#/components/schemas/PostContactRequest" />
+
+:::caution Permissão para Visualizar Documentos
+
+Para utilizar esta rota é necessário que o usuário tenha permissão de **Adminstrar Contatos**
+
+:::
+
+Abaixo um exemplo alterando o nome e o e-email do CPF *100.000.000-19* (Assumindo que o CPF já existe na base).
+
+```bash
+
+curl -X 'POST' \
+  'https://sign-core-uat.acesso.io/api/v1/service/contact' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer {{ACCESS_TOKEN}}'
+  -d ''{
+  "ContactName": "Margaria Clara",
+  "ContactCPF": "10000000019",
+  "ContactEmail": "test@test.com",
+  "ContactPhone": "1192345678",
+  "ContactIdentifier": "test-123-test"
+}'
+```
+
+Se tudo der certo em sua requisição, você receberá como resposta um JSON contendo a confirmação da inclusão ou atualização do contato, conforme abaixo:
+
+```json title="Exemplo de inclusão de contato"
+{
+  "Success": true,
+  "Message": "Contato inserido com sucesso"
+}
+```
+
+```json title="Exemplo de atualização de contato"
+{
+  "Success": true,
+  "Message": "Contato atualizado com sucesso"
+}
+```
+
+
+:::info API Reference
+
+Aprenda mais sobre este endpoint em nosso [API Reference](#).
+
+:::
+
+</li>
+</ol>
+</Steps>
+
+## Próximos passos
+
+- Conheça outras funcionalidades disponíveis para o [Gerenciamento de documentos](/docs/category/gerenciando-documentos).
+- Conheça outras funcionalidades disponíveis para o [Gerenciamento de envelopes](/docs/category/gerenciando-envelopes).
+- Tendo problemas em nossa integração? Acesse nossa sessão de [FAQ e problemas comuns](/FAQ).
+- Explore a documentacão da API do Unico Sign em nosso [API Reference](#).
+
+## Ficou com dúvidas?
+
+Esperamos ter ajudado com este artigo. Não encontrou algo ou ainda precisa de ajuda? 
+
+- Caso tenha dúvidas que não estejam relacionadas as nossas APIs, acesse nossa [central de ajuda](https://ajuda.unico.io/hc/pt-br/categories/360003086372-Unico-Sign).
+- Caso já seja um parceiro, entre em contato através de nosso [portal de solicitações](https://ajuda.unico.io/hc/pt-br/requests/new).

@@ -1,0 +1,191 @@
+---
+sidebar_position: 1
+sidebar_label: Listar documentos
+description: Aprenda como listar todos os documentos de um envelope
+title: Listar documentos
+---
+
+## Sobre este guia
+
+Através deste guia, demonstraremos como listar os documentos pertencentes a um envelope através de nossa API REST. Ao seguir os passos deste guia, em poucos minutos você será capaz de obter todos os documentos de um envelope (assim como alguns de seus detalhes), de forma estruturada em uma resposta JSON.
+
+## O que você vai precisar
+
+Antes de iniciar sua integração:
+
+1. Certifique-se que você possui credenciais válidas para utilizar o **Unico Sign**. Se você ainda não possui suas credenciais, siga nosso [guia de Primeiros Passos](#) para configurar sua conta de teste e obter suas chaves de API.
+2. Entenda os conceitos básicos sobre nosso produto. É extremamente importante que você entenda estes conceitos para fazer uma boa utilização das APIs do **Unico Sign**. Você pode encontrar nossos conceitos básicos [neste guia](#).
+
+## Funcionamento básico
+
+Como explicamos em nosso [guia de conceitos básicos](#), nossa entidade **Envelope** (`envelope`) é a representação virtual de um envelope com documentos na vida real. Ele é o objeto que agrupa todos os documentos (`document`)  e seus assinantes (`subscriber`), sendo que um envelope pode conter mais de documento, que por sua vez pode conter um ou mais assinantes.
+
+Entenda, a seguir, como chamar nossa API REST para obter todos os documentos de um envelope.
+
+import Steps from '@site/src/components/Steps';
+
+<Steps headingDepth={3}>
+<ol>
+
+<li>
+
+### Obtenha um token OAuth válido;
+
+Para efetuar requisições à nossa API REST você necessitará de um token de acesso OAuth válido. Caso não esteja familizarizado com o modelo de autenticação OAuth, entenda como gerar um token válido [neste artigo](#). Após sua geração, o token de acesso deverá ser enviado no `header` de sua requisição, junto ao parâmetro `Authorization`.
+
+:::info Ambientes
+
+Ao iniciar sua integração você receberá credenciais a nosso ambiente de homologação. Sómente após o processo de testes e certificação você receberá credenciais de produção.
+
+Você deverá apontar suas requisições às URLs corretas em cada estágio de sua integração. Abaixo listamos as URLs de homologação e produção:
+
+- Ambiente de homologação: `https://signhom.acesso.io`;
+- Ambiente de produção: `https://sign.acesso.io`.
+
+:::
+
+</li>
+
+<li>
+
+### Configure os filtros de sua pesquisa
+
+Opcionalmente, você pode configurar alguns critérios para sua busca. Para isto, os campos de filtro devem ser enviados no `body` de sua requisição.
+
+:::info Obrigatoriedade dos filtros
+
+Nenhum dos filtros é obrigatório. Caso não informados, por padrão, retornaremos 30 envelopes em nossa resposta JSON.
+
+:::
+
+O schema abaixo contêm os parâmetros e domínios permitidos para a configuração dos filtros:
+
+import ApiSchema from '@theme/ApiSchema';
+
+<ApiSchema pointer="#/components/schemas/GetEnvelopesRequest" />
+
+O exemplo abaixo solicita em ordem **ascendente**, envelopes cujos assinantes possuam o **CPF 100.000.000-19**, criados de ** 01/08/2022 a 31/08/2022**, com status **pendente**.
+
+```json
+{
+  "CPF": "10000000019",  
+  "StartDate": "01/08/2022",
+  "EndDate": "31/08/2022",
+  "Status": 1,
+  "Order": "ASC"
+}
+```
+
+</li>
+
+<li>
+
+### Faça uma requisição POST para o endpoint `/envelopes/`
+
+import HttpMethod from '@site/src/components/HttpMethod';
+
+Após gerar um token de acesso válido e, opcionalmente, montar o `body` com os filtros, faça uma requisição para o endpoint de obtenção de lista de documentos da nossa API REST (<HttpMethod method="POST">/service/envelopes</HttpMethod>). Serão obtidos os dados de todos envelopes atrelados ao usuário do token utilizado.
+
+:::caution Permissão para Visualizar Documentos
+
+Para utilizar esta rota é necessário que o usuário tenha permissão de **Visualizar Documentos**
+
+:::
+
+Exemplo solicitando em ordem **ascendente**, envelopes cujos assinantes possuam o **CPF 100.000.000-19**, criados de ** 01/08/2022 a 31/08/2022**, com status **pendente**:
+
+```bash
+curl -X 'POST' \
+  'https://sign-core-uat.acesso.io/api/v1/service/envelopes' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer {{ACCESS_TOKEN}}'
+  -d '{
+  "CPF": "10000000019",  
+  "StartDate": "01/08/2022",
+  "EndDate": "31/08/2022",
+  "Status": 1,
+  "Order": "ASC"
+}'
+```
+
+Se tudo der certo em sua requisição, você receberá como resposta um JSON contendo uma lista todos os envelopes associados a sua consulta:
+
+```json
+{
+  "Success": true,
+  "Message": "",
+  "Data": {
+    "Page": 1,
+    "MaxPage": 5,
+    "Count": 50,
+    "Envelopes": [
+      {
+        "CreatedDate": "09/04/2022 20:09",
+        "ID_EnvelopeStatus": 2,
+        "EnvelopeStatus": "Concluído",
+        "UUID": "00000000-0000-0000-0000-000000000000",
+        "HasFrame": false,
+        "Documents": [
+          {
+            "Url": "https://sign.unico.io/path",
+            "UrlVoucher": "https://sign.unico.io/path",
+            "DocumentType": "admissao",
+            "CreatedDate": "09/04/2022 20:09",
+            "EmitterUserName": "Carlos Eduardo",
+            "EmitterUserUUID": "00000000-0000-0000-0000-000000000000",
+            "EmitterUserEmail": "test@test.com",
+            "CompanySocialName": "unico",
+            "UUID": "00000000-0000-0000-0000-000000000000",
+            "HasFile": false,
+            "Subscribers": [
+              {
+                "SubscriberName": "Flavia dos Santos",
+                "SubscriberCPF": "10000000019",
+                "SubscriberEmail": "test@test.com",
+                "SubscriberPhone": "551192345678",
+                "SubscriberOrder": 1,
+                "SubscriberRole": 1,
+                "URLFrameFull": "https://unico.io/path",
+                "IsUser": false
+              }
+            ],
+            "IsTemplate": false,
+            "DocumentSubcategoryUUID": "00000000-0000-0000-0000-000000000000",
+            "DocumentSubcategoryName": "Abertura de conta bancária",
+            "DocumentCategoryUUID": "00000000-0000-0000-0000-000000000000",
+            "DocumentCategoryName": "Admissão"
+          }
+        ]
+      }
+    ],
+    "Rows": 0
+  }
+}
+```
+
+Cada elemento do objeto `Envelopes` representa um envelope com seus respectivos documentos, contidos no objeto `Documents`.
+
+:::info API Reference
+
+Aprenda mais sobre este endpoint em nosso [API Reference](#).
+
+:::
+
+</li>
+</ol>
+</Steps>
+
+## Próximos passos
+
+- Conheça outras funcionalidades disponíveis para o [Gerenciamento de documentos](/docs/category/gerenciando-documentos).
+- Conheça outras funcionalidades disponíveis para o [Gerenciamento de envelopes](/docs/category/gerenciando-envelopes).
+- Tendo problemas em nossa integração? Acesse nossa sessão de [FAQ e problemas comuns](/FAQ).
+- Explore a documentacão da API do Unico Sign em nosso [API Reference](#).
+
+## Ficou com dúvidas?
+
+Esperamos ter ajudado com este artigo. Não encontrou algo ou ainda precisa de ajuda? 
+
+- Caso tenha dúvidas que não estejam relacionadas as nossas APIs, acesse nossa [central de ajuda](https://ajuda.unico.io/hc/pt-br/categories/360003086372-Unico-Sign).
+- Caso já seja um parceiro, entre em contato através de nosso [portal de solicitações](https://ajuda.unico.io/hc/pt-br/requests/new).
