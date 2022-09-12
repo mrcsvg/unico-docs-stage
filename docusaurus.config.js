@@ -9,7 +9,7 @@ const config = {
   title: 'My Site',
   tagline: 'Dinosaurs are cool',
   url: 'https://your-docusaurus-test-site.com',
-  baseUrl: '/',
+  baseUrl: '/unico-docs-stage/',
   onBrokenLinks: 'ignore',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.png',
