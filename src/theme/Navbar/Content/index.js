@@ -28,7 +28,12 @@ import NavbarLogo from '@theme/Navbar/Logo';
 import NavbarSearch from '@theme/Navbar/Search';
 import styles from './styles.module.css';
 
+import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
+
 import {useLocation} from '@docusaurus/router';
+
+
+
 
 function useNavbarItems() {
   // TODO temporary casting until ThemeConfig type is improved
@@ -56,22 +61,35 @@ function NavbarContentLayout({left, right}) {
 
 // Remover o dropdown de localizacao para o sign
 function RemoveLocaleDropDown(items){     
-  console.log(items)
-  return items.filter(function(item) {    
-    return  !(item.type == "localeDropdown" && location.pathname.includes("sign"))         
-  })
+  
+
+  if (ExecutionEnvironment.canUseDOM) {
+    return items.filter(function(item) {  
+      const location = useLocation();  
+      return  !(item.type == "localeDropdown" && location.pathname.includes("sign"))         
+    })
+
+
+  } else {
+    return items
+  }
+
+
+
+
 }
 
 export default function NavbarContent() {
   const mobileSidebar = useNavbarMobileSidebar();
   const items = useNavbarItems();
 
+
   const filteredItems = RemoveLocaleDropDown(items)
   // const [leftItems, rightItems] = splitNavbarItems(items); 
   const [leftItems, rightItems] = splitNavbarItems(filteredItems);
   
   const searchBarItem = items.find((item) => item.type === 'search');
-  const location = useLocation();
+  
 
   
 

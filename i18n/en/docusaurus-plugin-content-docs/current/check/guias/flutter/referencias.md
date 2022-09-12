@@ -69,6 +69,9 @@ You can use this method to change this configuration.
 
 #### Implementation example:
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 <Tabs>
   <TabItem value="dart" label="Dart" default>
 

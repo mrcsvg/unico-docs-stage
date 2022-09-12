@@ -1,5 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
+import BrowserOnly from '@docusaurus/BrowserOnly';
+import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import "./styles.css";
 
 class Cursor extends React.Component {
@@ -11,10 +13,19 @@ class Cursor extends React.Component {
       fontStyle,
       fontWeight      
     } = this.props;
-    const root = document.documentElement;
-    root.style.setProperty("--blink-time", `${blinkTime}s`);
+
+    
+
+    if (ExecutionEnvironment.canUseDOM) {
+      const root = document.documentElement;
+      root.style.setProperty("--blink-time", `${blinkTime}s`);
+    }
+
     return (
-        <span className="blink" style={{color, fontSize, fontStyle, fontWeight}}> | </span>
+
+        
+          <span className="blink" style={{color, fontSize, fontStyle, fontWeight}}> | </span>
+        
     );
   }
 }

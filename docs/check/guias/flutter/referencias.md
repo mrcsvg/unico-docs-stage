@@ -62,6 +62,9 @@ Configura o tempo máximo de captura ao utilizar a detecção da face (smart câ
 
 ### Exemplos de utilização
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 <Tabs>
   <TabItem value="dart" label="Dart" default>
 

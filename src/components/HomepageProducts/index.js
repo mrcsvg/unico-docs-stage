@@ -2,6 +2,11 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.css';
 import {useLocation} from '@docusaurus/router';
+import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
+
+  
+
+
 
 const FeatureList = [
   {
@@ -34,19 +39,25 @@ const FeatureList = [
         Documentação e recursos de nossa API REST.
       </>
     ),
-    path:"docs/sign/intro"
+    path:"/sign/intro"
 
   },
 ];
 
 function Feature({img, path, title, subTitle, description}) {
 
-  const location = useLocation();
+  var pathBase = ""
+  if (ExecutionEnvironment.canUseDOM) {
+    const location = useLocation();
+     pathBase = location.pathname 
+  } else {
+     pathBase = "/"
+  }
 
   return (
 
 
-    <a href={location.pathname + path} className={styles.card}>
+    <a href={pathBase + path} className={styles.card}>
 
       {/* <div className={styles.cardHome}> */}
       

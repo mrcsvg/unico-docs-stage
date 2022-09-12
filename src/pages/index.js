@@ -12,12 +12,13 @@ import Cursor from '@site/src/components/Cursor';
 import styles from './index.module.css';
 
 function HomepageHeader() {
-  const {siteConfig} = useDocusaurusContext();
+  
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
         <code> Start building with  </code>
-        <h1 className="hero__title"> <code> {"<"}Unico{"/>"}</code> <Cursor color='white' fontSize='20' />    </h1>  
+        
+        <h1 className="hero__title"> <code> {"<"}Unico{"/>"}</code> </h1>  <Cursor color='white' fontSize='20' />
         
         <p className="hero__subtitle">Encontre aqui recursos e guias para iniciar sua integração com as soluções da Unico</p>
         
@@ -36,8 +37,8 @@ export default function Home() {
       description="Description will go into a meta tag in <head />">
       <HomepageHeader />
       <main className={styles.home}>    
-        <HomepageProducts />  
-        <SupportArticles />  
+        <HomepageProducts />
+        <SupportArticles />
       </main>
     </Layout>
   );
