@@ -4,7 +4,8 @@ import styles from './styles.module.css';
 import {useLocation} from '@docusaurus/router';
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 
-  
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 
 
 
@@ -22,7 +23,7 @@ const FeatureList = [
         Documentação e recursos de nossos SDKs Web, iOS, Android e Flutter
       </>
     ),
-    path:"docs"
+    path:"/docs"
 
 
   },
@@ -39,7 +40,7 @@ const FeatureList = [
         Documentação e recursos de nossa API REST.
       </>
     ),
-    path:"docs/sign/intro"
+    path:"/docs/sign/intro"
 
   },
 ];
@@ -57,7 +58,7 @@ function Feature({img, path, title, subTitle, description}) {
   return (
 
 
-    <a href={pathBase + path} className={styles.card}>
+    <a href={ useBaseUrl(path)} className={styles.card}>
 
       {/* <div className={styles.cardHome}> */}
       
