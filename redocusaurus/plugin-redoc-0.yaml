@@ -2,11 +2,33 @@ openapi: 3.0.1
 info:
   title: Sign Core API
   version: '1.0'
+  description: Descrição bacaninha pra colocarmos no swagger
+tags:
+  - name: Gerenciando envelopes
+    description: Lorem ipsem envelopes
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+  - name: Gerenciando documentos
+    description: Lorem ipsem documentos
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+  - name: Solicitar assinaturas
+    description: Lorem ipsem assinaturas
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+  - name: Gerenciando contatos
+    description: Lorem ipsem contatos
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
 paths:
   /api/v1/service/envelopes:
     post:
       tags:
-        - Sign API V1
+        - Gerenciando envelopes
       summary: Obtém envelopes
       description: >-
         Para utilizar esta rota é necessário que o usuário tenha permissão de
@@ -116,7 +138,7 @@ paths:
   /api/v1/service/file/{uuidDocument}:
     get:
       tags:
-        - Sign API V1
+        - Gerenciando documentos
       summary: Obtém arquivo de documento
       parameters:
         - name: uuidDocument
@@ -158,7 +180,7 @@ paths:
   /api/v1/service/evidence/{uuidDocument}:
     get:
       tags:
-        - Sign API V1
+        - Gerenciando documentos
       summary: Obtém arquivo de conjunto de evidências
       parameters:
         - name: uuidDocument
@@ -200,7 +222,7 @@ paths:
   /api/v1/service/envelope:
     post:
       tags:
-        - Sign API V1
+        - Solicitar assinaturas
       summary: "Cria um envelope, documento e arquivos\r\nRecebe dados em JSON Body"
       requestBody:
         description: Contém a estrutura para criação do envelope
@@ -214,7 +236,7 @@ paths:
   /api/v1/service/templatedata/{UUID_Document}:
     get:
       tags:
-        - Sign API V1
+        - Gerenciando documentos
       summary: Obtém os dados digitados pelo usuário no modelo
       parameters:
         - name: UUID_Document
@@ -244,7 +266,7 @@ paths:
   /api/v1/service/cancel:
     post:
       tags:
-        - Sign API V1
+        - Gerenciando envelopes
       summary: Cancela um envelope
       description: >-
         Para utilizar esta rota é necessário que o usuário tenha permissão de
@@ -296,7 +318,7 @@ paths:
   /api/v1/service/contact:
     post:
       tags:
-        - Sign API V1
+        - Gerenciando contatos
       summary: Cria ou Atualiza um contato
       description: >-
         Para utilizar esta rota é necessário que o usuário tenha permissão de
@@ -348,7 +370,7 @@ paths:
   /api/v1/service/categories:
     get:
       tags:
-        - Sign API V1
+        - Gerenciando documentos
       summary: Obtém os dados de categoria e subcategoria de documento por cliente
       parameters:
         - name: page
@@ -363,7 +385,7 @@ paths:
   /api/v1/service/documents/{uuidDocument}:
     get:
       tags:
-        - Sign API V1
+        - Gerenciando documentos
       summary: Detalhes do documento
       parameters:
         - name: uuidDocument
