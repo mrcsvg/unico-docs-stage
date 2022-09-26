@@ -2,13 +2,51 @@
   "openapi": "3.0.1",
   "info": {
     "title": "Sign Core API",
-    "version": "1.0"
+    "version": "1.0",  
+    "description": "Descrição bacaninha pra colocarmos no swagger"
   },
+  "tags": [
+    {
+    "name": "Gerenciando envelopes",
+    "description": "Lorem ipsem envelopes",
+    "externalDocs": {
+      "description": "Find out more",
+      "url": "http://swagger.io"
+    }
+  },
+
+  {
+    "name": "Gerenciando documentos",
+    "description": "Lorem ipsem documentos",
+    "externalDocs": {
+      "description": "Find out more",
+      "url": "http://swagger.io"
+    }
+  },
+  {
+    "name": "Solicitar assinaturas",
+    "description": "Lorem ipsem assinaturas",
+    "externalDocs": {
+      "description": "Find out more",
+      "url": "http://swagger.io"
+    }
+  },
+  {
+    "name": "Gerenciando contatos",
+    "description": "Lorem ipsem contatos",
+    "externalDocs": {
+      "description": "Find out more",
+      "url": "http://swagger.io"
+    }
+  }
+
+
+],
   "paths": {
     "/api/v1/service/envelopes": {
       "post": {
         "tags": [
-          "Sign API V1"
+          "Gerenciando envelopes"
         ],
         "summary": "Obtém envelopes",
         "description": "Para utilizar esta rota é necessário que o usuário tenha permissão de `Visualizar Documentos`\n            <br>Serão obtidos os dados dos envelopes atrelados ao usuário do token utilizado.\n            <br>Nenhum dos filtros é obrigatório. Caso nenhum seja informado, o retorno padrão será \n            a primeira página contendo 30 envelopes.",
@@ -88,7 +126,7 @@
     "/api/v1/service/file/{uuidDocument}": {
       "get": {
         "tags": [
-          "Sign API V1"
+          "Gerenciando documentos"
         ],
         "summary": "Obtém arquivo de documento",
         "parameters": [
@@ -144,7 +182,7 @@
     "/api/v1/service/evidence/{uuidDocument}": {
       "get": {
         "tags": [
-          "Sign API V1"
+          "Gerenciando documentos"
         ],
         "summary": "Obtém arquivo de conjunto de evidências",
         "parameters": [
@@ -200,7 +238,7 @@
     "/api/v1/service/envelope": {
       "post": {
         "tags": [
-          "Sign API V1"
+          "Solicitar assinaturas"
         ],
         "summary": "Cria um envelope, documento e arquivos\r\nRecebe dados em JSON Body",
         "requestBody": {
@@ -223,7 +261,7 @@
     "/api/v1/service/templatedata/{UUID_Document}": {
       "get": {
         "tags": [
-          "Sign API V1"
+          "Gerenciando documentos"
         ],
         "summary": "Obtém os dados digitados pelo usuário no modelo",
         "parameters": [
@@ -271,7 +309,7 @@
     "/api/v1/service/cancel": {
       "post": {
         "tags": [
-          "Sign API V1"
+          "Gerenciando envelopes"
         ],
         "summary": "Cancela um envelope",
         "description": "Para utilizar esta rota é necessário que o usuário tenha permissão de `Enviar Documentos`",
@@ -327,7 +365,7 @@
     "/api/v1/service/contact": {
       "post": {
         "tags": [
-          "Sign API V1"
+          "Gerenciando contatos"
         ],
         "summary": "Cria ou Atualiza um contato",
         "description": "Para utilizar esta rota é necessário que o usuário tenha permissão de `Administrar Contatos`",
@@ -383,7 +421,7 @@
     "/api/v1/service/categories": {
       "get": {
         "tags": [
-          "Sign API V1"
+          "Gerenciando documentos"
         ],
         "summary": "Obtém os dados de categoria e subcategoria de documento por cliente",
         "parameters": [
@@ -407,7 +445,7 @@
     "/api/v1/service/documents/{uuidDocument}": {
       "get": {
         "tags": [
-          "Sign API V1"
+          "Gerenciando documentos"
         ],
         "summary": "Detalhes do documento",
         "parameters": [

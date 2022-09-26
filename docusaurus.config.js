@@ -105,7 +105,7 @@ const config = {
               {
                 type: 'doc',
                 label: 'Unico Check',
-                docId: 'check/guias/web/release-notes',
+                docId: 'check/intro',
               },
               {
                 type: 'doc',

@@ -6,7 +6,7 @@ title: Solicitando assinaturas
 
 ## Sobre este guia
 
-Através deste guia, demonstraremos como solicitar assinturas eletrônicas de documentos através de nossas APIs REST. Ao seguir os passos deste guia, em poucos minutos você será capaz de: 
+Através deste guia, demonstraremos como solicitar assinaturas eletrônicas de documentos através de nossas APIs REST. Ao seguir os passos deste guia, em poucos minutos você será capaz de: 
 
 - Solicitar assinaturas através da criação de envelopes;
 - Obter envelopes já criados;
@@ -28,7 +28,7 @@ Os documentos para assinatura sempre estarão contidos dentro de envelopes. Ente
 
 Antes de iniciar sua integração:
 
-1. Certifique-se que você possui credenciais válidas para utilizaro **Unico Sign**. Se você ainda não suas credenciais, siga nosso [guia de Primeiros Passos](#) para configurar sua conta de teste e obter sua chaves de API.
+1. Certifique-se que você possui credenciais válidas para utilizaro **Unico Sign**. Se você ainda não possui suas credenciais, siga nosso [guia de Primeiros Passos](#) para configurar sua conta de teste e obter sua chaves de API.
 2. Entenda os conceitos básicos sobre nosso produto. É extremamente importante que você entenda estes conceitos para fazer uma boa utilização das APIs do **Unico Sign**. Você pode encontrar nossos conceitos básicos [neste guia](#).
 
 ## Funcionamento básico
@@ -37,10 +37,22 @@ Como explicamos em nosso [guia de conceitos básicos](#), `Envelopes` são uma r
 
 <!-- #TODO Incluir explicacão funcional de como funciona as assinaturas -->
 
-Ao criar um envelope, um e-mail e um SMS O e-mail conterá um link de assinatura que o destinatário pode usar para abrir e assinar eletronicamente um documento usando o aplicativo móvel da DocuSign ou o site da DocuSign. Após a conclusão da assinatura, o destinatário receberá uma cópia carbono (CC) do e-mail que inclui todos os documentos preenchidos e assinados.
+Ao criar um envelope, os usuários que devem assinar o documento (`Subscriber`) serão notificados através de um email, SMS ou uma notificação do aplicativo **Unico | You**. 
+
+- Enviaremos uma notifiação por **email** quando o email do assinante for informado no momento do envio do envelope.
+- Enviaremos uma notificações por **SMS** quando o número de telefone do assinante for informado no momento do envio do envelope.
+- Enviaremos uma notifiação por **push** quando o assinante possua o aplicativo **Unico | You** instalado.
+
+Um email será enviado quando: seja cadastrado o email do assinante no momento do envio do envelope. 
+Um SMS Será enviado quando:  SMS caso seja cadastrado o número de telefone do assinante no momento do envio de envelope. 
+Uma notifiação será senSerá enviada a notificação para o Unico | You caso o assinante tenha o aplicativo instalado. 
+
+Caso as três opções sejam possíveis simultaneamente para um envelope, o email não será enviado, o assinante receberá apenas o SMS e a notificação no aplicativo.
 
 :::info 
-Um envelope deve conter pelo menos um documento, sendo aceito no máximo 10 documentos por envelope.
+- Um envelope deve conter pelo menos um documento. 
+- A quantidade de documentos em um envelope é ilimitada, no entando, o tamanho do envelope não pode exceder 20Mb. 
+- O tamanho de cada documento não pode exceder 10Mb.
 :::
 
 Os elementos básicos para a criação de um `Envelope` são:
@@ -101,7 +113,7 @@ A criação de documentos em envelopes pode ser feita utilizando um template pr�
 
 #### Utilizando um arquivo PDF/Base64
 
-Para criar um documento através de um *PDF*, basta converver e enviar o arquivo *PDF* através de nossa API. Para isto, o conteúdo de seu arquivo *PDF* deverá ser enviado através do campo `FileBase64`, codificado em em *Base64*.
+Para criar um documento através de um *PDF*, basta converter e enviar o arquivo *PDF* através de nossa API. Para isto, o conteúdo de seu arquivo *PDF* deverá ser enviado através do campo `FileBase64`, codificado em em *Base64*.
 
 :::info Arquivos *Base64*
 
@@ -158,7 +170,9 @@ Caso o assinante necessite preencher algum campo do modelo, utilize o parâmetro
 
 - O campo `FieldCode` deverá conter exatamente o mesmo nome especificado no template; #TODO (case sensitive? confirmar);
 - Caso deseje enviar o campo pré-preenchido no modelo, informe o valor desejado no parâmetro `FieldValue` correspondente ao campo;
-- Caso não deseje enviar o campo pré-preenchido no modelo, envie `null` no parâmetro `FieldValue` correspondente ao campo;
+- Caso não deseje enviar o campo pré-preenchido no modelo: 
+  - Não envie o campo em questão em sua requisição;
+  - Envie `null` no parâmetro `FieldValue` correspondente ao campo;
 
 No exemplo abaixo, o formulário viria com o nome de a idade pré-preenchidos (possível alterar? #TODO Confirmar) e o campo CPF viria em branco para preenchimento. Todos os campos informados no parâmetro `TemplateFields` serão de preenchimento obrigatório. #TODO Confirmar
 
@@ -213,9 +227,15 @@ O assinante é o agente final do envelope, ou seja, é quem irá realizar a assi
 
 A ordem de em que as assinaturas serão solicitadas deverá respeitar as seguintes regras:
 
-- Em documentos gerados através de um template, você poderá selecionar um dos assinantes para receber a notificação primeiro. Os demais assinantes receberá na ordem indicada 
+:::caution Primeiro assinante
+
+Em documentos gerados através de um template o primeiro assinante sempre deverá ser indicado, pois é ele quem irá preencher os campos do documento.
+
+:::
+
+- Em documentos gerados através de um template, você **deverá** selecionar um dos assinantes para receber a notificação primeiro. Os demais assinantes receberão na ordem indicada.
 - Os assinantes podem possuir o mesmo número de ordem, isso fará com que eles recebam a notificação no mesmo momento.
-- Em documentos gerados através de um PDF, todos os assinantes serão notificados ao mesmo tempo.
+- Em documentos gerados através de um PDF, todos os assinantes serão notificados na ordem configurada na criação do envelope.
 
 :::tip Assinantes, documentos e envelopes
 
@@ -433,9 +453,27 @@ curl -X 'POST' \
 
 Se tudo der certo em sua requisição, você receberá como respota:
 
-```text
- assdad
-xxxxx
+```json
+{
+    "Success": true,
+    "Message": "",
+    "Data": {
+        "CreatedDate": "14/05/2020 11:55",
+        "ID_EnvelopeStatus": 1,
+        "EnvelopeStatus": "Pendente",
+        "UUID": "x11x111x-x11x-1111-11x1-11x111x1xx1x",
+        "Documents": [
+            {
+                "Url": "https://signhom.acesso.io/api/v1/service/file/y00y000y-y00y-0000-00y0-00y000y0yy00",
+                "DocumentType": "Nome do Documento",
+                "CreatedDate": "14/05/2020 11:55",
+                "EmitterUserName": "Nome do Emissor",
+                "UUID": "y00y000y-y00y-0000-00y0-00y000y0yy00",
+                "IsTemplate": false
+            }
+        ]
+    }
+}
 
 ```
 

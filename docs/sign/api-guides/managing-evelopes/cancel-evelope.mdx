@@ -20,7 +20,12 @@ Antes de iniciar sua integração:
 
 Como explicamos em nosso [guia de conceitos básicos](#), nossa entidade **Envelope** (`envelope`) é a representação virtual de um envelope com documentos na vida real. Ele é o objeto que agrupa todos os documentos (`document`) e seus assinantes (`subscriber`), sendo que um envelope pode conter mais de documento, que por sua vez pode conter um ou mais assinantes.
 
-Ao cancelar um envelope, um e-mail e um SMS serão enviados para os assinantes dos documentos contidos no envelope. Uma vez cancelado, o envelope não poderá mais ser acessado, assinado ou recusado pelos assinantes.
+Ao cancelar um envelope, um e-mail e/ou SMS serão enviados para os assinantes dos documentos contidos no envelope. O método de notificação irá dependender de quais dados dos assinantes foram cadastrados no momento do envio do envelope.
+
+Uma vez cancelado, o envelope não poderá mais ser acessado, assinado ou recusado pelos assinantes.
+
+
+
 
 Entenda, a seguir, como chamar nossa API REST para cancelar um envelope.
 

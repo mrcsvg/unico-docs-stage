@@ -10,7 +10,7 @@ Através deste guia, demonstraremos como recuperar um conjunto de evidências de
 
 :::info Envelopes, documentos e evidências 
 
-Você já sabe, mas não custa lembrar: Um envelope possui um ou mais documentos. As evidências relacionam-se diretament aos documentos e não aos envelopes.
+Você já sabe, mas não custa lembrar: Um envelope possui um ou mais documentos. As evidências relacionam-se diretamente aos documentos e não aos envelopes.
 :::
 
 ## O que você vai precisar
@@ -70,7 +70,12 @@ O documento de evidências está disponível apenas para os 3 status finais do f
 
 :::note Consulta do status
 
-Atualmente não disponibilizamos nenhum endpoint para consultar o status do documento. Caso o documento não esteja em um status considerado "final", retornaremos um erro HTTP 500.
+Caso o documento não esteja em um status considerado "final", retornaremos um erro HTTP 500.
+
+import HttpMethod from '@site/src/components/HttpMethod';
+
+Você pode consultar o status dos documentos através do método (<HttpMethod method="GET">/service/documents</HttpMethod>). Saiba mais sobre este método [neste guia](get-details).
+
 
 :::
 

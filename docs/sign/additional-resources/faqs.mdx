@@ -2,10 +2,63 @@
 sidebar_position: 1
 sidebar_label: FAQ
 title: FAQ
+hide_table_of_contents: true
 ---
 
-:::warning Em construção
+# FAQs
 
-Em breve compartilharemos nossas FAQs
+Consolidamos aqui algumas das perguntas mais frequentes sobre nossos SDKs. Confira abaixo:
 
-:::
+import TOCInline from '@theme/TOCInline';
+
+<TOCInline toc={toc} />
+
+### Para que serve o campo “IsFrame”?
+O detalhamento do campo IsFrame está [nessa parte](/docs/sign/api-guides/envelope#configurações-adicionais) da nossa documentação.
+
+### A notificação do callback é enviada para quais status do envelope?
+O detalhamento do callback está [nessa parte](/docs/sign/api-guides/envelope#configurações-adicionais) da nossa documentação.
+
+### Posso incluir mais de um assinante no mesmo envelope/requisição?
+Sim, o envio de novo envelope aceita até no máximo 10 assinantes.
+
+### Qual o número máximo de documentos que posso incluir em um envelope? 
+É possível incluir quantos documentos quiser desde que não sejam ultrapassados os limites de tamanho de 20MB no total e 10MB por arquivo.
+
+### Qual o tamanho máximo dos documentos que posso incluir em um envelope?
+É possível inserir documentos de até 10MB cada um e a soma do tamanho dos arquivos tem um máximo de 20MB.
+
+### No envio de envelope com modelo, mais de um assinante pode preencher os campos?
+Não, apenas o assinante com ordem 1, ou seja, a primeira pessoa a assinar pode preencher os campos em branco.
+
+### Qual é a quantidade máxima de requisições que posso fazer por segundo? E por minuto?
+Não existe limitação do número de requisições por tempo.
+
+### Nos endpoints de consulta do arquivo pdf, evidência e dados do modelo, o UUID a ser informado na requisição não é o do envelope e sim do documento. Onde localizo o UUID do documento?
+O UUID do documento é recebido na resposta da chamada quando é feita uma requisição para que seja criado um novo envelope. Também é possível obter esse UUID fazendo uma busca por envelope.
+
+### Não estou recebendo a notificação por e-mail ou sms. O que pode estar acontecendo?
+Algumas razões podem estar ocasionando esse problema.
+-	Se na hora do envio for cadastrado telefone e o email não for informado, então será enviada a notificação por SMS e não haverá notificação por email.
+-	Se na hora do envio for cadastrado email e o telefone não for informado, então será enviada a notificação por email e não haverá notificação por SMS.
+-	Se na hora do envio for cadastrado telefone e email e o assinante tiver o Unico | You instalado ele não receberá email, apenas a notificação do aplicativo e o SMS.
+-	Se na hora do envio o IsFrame estiver como true, não é enviada nenhuma notificação.
+
+### Em quanto tempo um envelope expira?
+Depende da configuração de cada cliente, mas o padrão é que o envelope expire após 10 dias corridos desde a data de envio.
+
+### Como posso alterar o período de expiração?
+É necessário abrir um chamado pelo link (https://unicoidtech.atlassian.net/servicedesk/customer/portal/38) solicitando a alteração.
+
+### É possível colocar um período de expiração de acordo com cada envelope?
+Não. O período de expiração é geral para todos os envelopes.
+
+### É possível enviar documentos com outros formatos como word, excel, etc?
+Não, são aceitos apenas PDFs.
+
+### Estou tentando fazer um reenvio, mas não consigo. O que pode estar acontecendo?
+Só é possível reenviar um envelope que esteja com status de pendente ou expirado, qualquer outro status ocasionará em erro.
+
+### Estou tentando cancelar um documento/envelope, mas não consigo. O que pode estar acontecendo?
+Só é possível cancelar um envelope que esteja com status de pendente ou expirado, qualquer outro status ocasionará em erro.
+

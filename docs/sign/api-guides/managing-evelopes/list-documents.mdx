@@ -111,6 +111,14 @@ curl -X 'POST' \
 
 Se tudo der certo em sua requisição, você receberá como resposta um JSON contendo uma lista todos os envelopes associados a sua consulta:
 
+:::caution Limite de páginas
+
+Atualmente não é possível listar documentos da página 334 em diante. Caso seja necessário acessar uma dessas páginas, recomendamos utilizar os filtros para uma busca mais assertiva.
+
+
+
+:::
+
 ```json
 {
   "Success": true,
